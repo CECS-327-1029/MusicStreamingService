@@ -10,21 +10,21 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String hashedPassword;
+    private String userName;
     private List<Playlist> playlists = new ArrayList<>();
     private int numberOfPlaylists;
 
 
-    public User(String firstName, String lastName, String email, String hashedPassword) {
+    public User(String firstName, String lastName, String email, String userName) {
         id = UUID.randomUUID();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.hashedPassword = hashedPassword;
+        this.userName = userName;
     }
 
-    public User(String firstName, String lastName, String email, String hashedPassword, List<Playlist> playlists) {
-        this(firstName, lastName, email, hashedPassword);
+    public User(String firstName, String lastName, String email, String userName, List<Playlist> playlists) {
+        this(firstName, lastName, email, userName);
         this.playlists = playlists;
         numberOfPlaylists = playlists.size();
     }
@@ -37,7 +37,7 @@ public class User {
 
     public String getEmail() { return email; }
 
-    public String getHashedPassword() { return hashedPassword; }
+    public String getUserName() { return userName; }
 
     public List<Playlist> getPlaylists() { return playlists; }
 
