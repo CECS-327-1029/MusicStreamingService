@@ -5,6 +5,8 @@ public class Release {
     private long id;
     private String name;
 
+    public Release() {}
+
     public Release(long id, String name) {
         this.id = id;
         this.name = name;

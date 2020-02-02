@@ -13,6 +13,8 @@ public class Artist {
     private String similar;
     private double hotttnesss;
 
+    public Artist() {}
+
     public Artist(double terms_freq, String terms, String name, double familiarity, double longitude,
                   String id, String location, double latitude, String similar, double hotttnesss) {
         this.terms_freq = terms_freq;

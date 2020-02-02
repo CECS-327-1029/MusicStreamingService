@@ -14,6 +14,7 @@ public class User {
     private List<Playlist> playlists = new ArrayList<>();
     private int numberOfPlaylists;
 
+    public User() {}
 
     public User(String firstName, String lastName, String email, String userName) {
         id = UUID.randomUUID();
@@ -29,7 +30,7 @@ public class User {
         numberOfPlaylists = playlists.size();
     }
 
-    public String getId() { return id.toString(); }
+    public UUID getId() { return id; }
 
     public String getFirstName() { return firstName; }
 
@@ -49,5 +50,16 @@ public class User {
     public void addPlaylist(Playlist playlist) {
         playlists.add(playlist);
         numberOfPlaylists++;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", userName='" + userName + '\'' +
+                '}';
     }
 }

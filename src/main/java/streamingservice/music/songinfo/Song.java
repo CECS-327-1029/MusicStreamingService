@@ -26,6 +26,7 @@ public class Song {
     private double time_signature;
     private double loudness;
 
+    public Song() {}
 
     public Song(double key, double mode_confidence, double artist_mbtags_count, double key_confidence, double tatums_start,
                 int year, double duration, double hotttnesss, double beats_start, double time_signature_confidence,

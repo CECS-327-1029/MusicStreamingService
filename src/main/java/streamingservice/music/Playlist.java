@@ -10,10 +10,13 @@ public class Playlist {
     private String playlistName;
     private int size;
     private ArrayList<Song> songs;
-    private LocalDateTime playlistCreationDateTime;
+    //private LocalDateTime playlistCreationDateTime;
+
+
+    public Playlist() { }
 
     public Playlist(String playlistName) {
-        playlistCreationDateTime = LocalDateTime.now();
+        //playlistCreationDateTime = LocalDateTime.now();
         id = UUID.randomUUID();
         songs = new ArrayList<>();
         this.playlistName = playlistName;
@@ -31,9 +34,9 @@ public class Playlist {
         return songs;
     }
 
-    public LocalDateTime getPlaylistCreationDateTime() {
-        return playlistCreationDateTime;
-    }
+//    public LocalDateTime getPlaylistCreationDateTime() {
+//        return playlistCreationDateTime;
+//    }
 
     public String getPlaylistName() {
         return playlistName;
