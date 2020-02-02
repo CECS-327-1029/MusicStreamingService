@@ -2,11 +2,13 @@ package streamingservice;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.*;
+import streamingservice.UI.AccountCreator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import javax.swing.*;
 
-public class Main {
+public class App {
    
       /**
      * Play a given audio file.
@@ -30,9 +32,13 @@ public class Main {
     }
      
      
-    public static void main(String[] args) {
-        Main player = new Main();
-        player.mp3play("resources/imperial.mp3");
+    public static void main(String[] args) throws IOException {
+        //App player = new App();
+        //player.mp3play("resources/imperial.mp3");
+        JFrame creator = new AccountCreator();
+        creator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        creator.setVisible(true);
+        creator.setResizable(false);
     }
  
 }

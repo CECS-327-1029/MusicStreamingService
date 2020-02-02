@@ -20,7 +20,7 @@ public class AccountCreator extends JFrame {
 
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 500;
-    private static final String USER_FILE_PATH = "resources\\users.json";
+    private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
 
     private Gson gson;
     private List<User> users;
@@ -45,7 +45,6 @@ public class AccountCreator extends JFrame {
     private JLabel errorEmailReEntryLabel;
 
     public AccountCreator() throws IOException {
-
         setTitle("Create Account");
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         createAccountPanel.setBackground(Color.yellow);
