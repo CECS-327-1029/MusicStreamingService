@@ -61,8 +61,6 @@ public class AccountCreator extends JFrame {
                     createAccount();
                     //TODO: Go to the user's profile
                     System.exit(0);
-                } else {
-                    System.out.println("Something is wrong!!");
                 }
             }
         );
@@ -138,11 +136,9 @@ public class AccountCreator extends JFrame {
     }
 
     private boolean isUserNameFreeToUse() {
-        System.out.println("Enter isUserNameFreeToUse...");
         boolean isFreeToUse = true;
         if (users != null) {
             for (int i = 0; i < users.size() && isFreeToUse; i++) {
-                System.out.println(i + ": " + users.get(i));
                 if (users.get(i).getUserName().equals(userNameTF.getText())) {
                     isFreeToUse = false;
                 }
@@ -155,12 +151,10 @@ public class AccountCreator extends JFrame {
             errorUserNameLabel.setText("");
             errorUserNameLabel.setVisible(false);
         }
-        System.out.println("Exit isUserNameFreeToUse.");
         return isFreeToUse;
     }
 
     private boolean isEmailFreeToUse() {
-        System.out.println("Enter isEmailFreeToUse...");
         boolean isFreeToUse = true;
         if (users != null) {
             for (int i = 0; i < users.size() && isFreeToUse; i++) {
@@ -178,24 +172,18 @@ public class AccountCreator extends JFrame {
             errorEmailLabel.setText("");
             errorEmailLabel.setVisible(false);
         }
-        System.out.println("Exit isEmailFreeToUse");
         return isFreeToUse;
     }
 
     private boolean areEmailsTheSame() {
-        System.out.println("\tEnter areEmailsTheSame...");
         boolean isSame = emailTF.getText().equals(reEnterEmailTF.getText());
-        System.out.println("\t\tisSame: " + isSame);
         if (!isSame) {
-            System.out.println("\t\tPrint it");
             errorEmailReEntryLabel.setText("Emails are different");
             errorEmailReEntryLabel.setVisible(true);
         } else {
             errorEmailReEntryLabel.setText("");
             errorEmailReEntryLabel.setVisible(false);
         }
-
-        System.out.println("\tExit areEmailsTheSame");
         return isSame;
     }
 
