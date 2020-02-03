@@ -18,12 +18,9 @@ import java.util.List;
 
 public class AccountCreator extends JFrame {
 
-    private static final int FRAME_WIDTH = 600;
-    private static final int FRAME_HEIGHT = 500;
-    private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
-
     private Gson gson;
     private List<User> users;
+    private String usersJsonFile;
 
     private JPanel createAccountPanel;
     private JLabel titleLabel;
@@ -44,15 +41,16 @@ public class AccountCreator extends JFrame {
     private JLabel errorEmailLabel;
     private JLabel errorEmailReEntryLabel;
 
-    public AccountCreator() throws IOException {
+    public AccountCreator(int frameWidth, int frameHeight, String usersJsonFile) throws IOException {
+        this.usersJsonFile = usersJsonFile;
         setTitle("Create Account");
-        setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        setSize(frameWidth, frameHeight);
         createAccountPanel.setBackground(Color.yellow);
         submitButton.setBackground(Color.MAGENTA);
         add(createAccountPanel);
 
         gson = new Gson();
-        Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
+        Reader reader = Files.newBufferedReader(Paths.get(usersJsonFile));
         users = gson.fromJson(reader, new TypeToken<List<User>>() {}.getType());
 
         submitButton.addActionListener(e -> {
@@ -72,7 +70,7 @@ public class AccountCreator extends JFrame {
         }
         users.add(newUser);
         try {
-            Writer writer = Files.newBufferedWriter(Paths.get(USER_FILE_PATH));
+            Writer writer = Files.newBufferedWriter(Paths.get(usersJsonFile));
             gson.toJson(users, writer);
             writer.close();
         } catch (IOException e) {
