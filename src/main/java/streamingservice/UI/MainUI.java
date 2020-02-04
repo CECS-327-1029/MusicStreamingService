@@ -48,12 +48,6 @@ public class MainUI {
     private JLabel reEmailErrorLabel;
     private JButton submitButton;
     private JButton createAccountBtn;
-    private JComboBox comboBox1;
-    private JTextField textField1;
-    private JPanel Left;
-    private JPanel Center;
-    private JPanel Right;
-    private JPanel playMusicPage;
 
 
     public MainUI() throws IOException {
@@ -62,9 +56,6 @@ public class MainUI {
         root.setLayout(cardLayout);
         root.add(LogIn, "Log In");
         root.add(AccountCreator, "Create Account");
-        UserView.add(Left, "Left");
-        UserView.add(Center, "Center");
-        UserView.add(Right, "Right");
         root.add(UserView, "User View");
         cardLayout.show(root, "Log In");
 
@@ -75,7 +66,7 @@ public class MainUI {
 
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
-                createAccount();
+                //createAccount();
                 cardLayout.show(root, "User View");
             }
         });
