@@ -24,7 +24,7 @@ public class MainUI {
     private Gson gson;
     private List<User> users;
 
-    private CardLayout cardLayout = new CardLayout();
+    private CardLayout cardLayout;
 
     private JPanel root;
     private JPanel LogIn;
@@ -49,14 +49,17 @@ public class MainUI {
     private JButton submitButton;
     private JLabel h;
     private JButton createAccountBtn;
+    private JPanel playMusicPage;
 
 
     public MainUI() throws IOException {
 
+        cardLayout = new CardLayout();
         root.setLayout(cardLayout);
         root.add(LogIn, "Log In");
         root.add(AccountCreator, "Create Account");
         root.add(UserView, "User View");
+        root.add(playMusicPage, "Play Music");
         cardLayout.show(root, "Log In");
 
         createAccountBtn.addActionListener(e -> {
@@ -216,4 +219,7 @@ public class MainUI {
         frame.setResizable(false);
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
 }
