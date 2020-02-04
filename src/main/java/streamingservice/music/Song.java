@@ -9,6 +9,8 @@ public class Song {
     private Artist artist;
     private streamingservice.music.songinfo.Song song;
 
+    public Song() {}
+
     public Song(Release release, Artist artist, streamingservice.music.songinfo.Song song) {
         this.release = release;
         this.artist = artist;

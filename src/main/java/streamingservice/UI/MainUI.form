@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="streamingservice.UI.MainUI">
+  <grid id="27dc6" binding="root" layout-manager="CardLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="592" height="445"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="33c03" binding="LogIn" layout-manager="GridBagLayout">
+        <constraints>
+          <card name="Card1"/>
+        </constraints>
+        <properties>
+          <background color="-13562663"/>
+          <preferredSize width="650" height="450"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="2abf2" class="javax.swing.JButton" binding="createAccountBtn">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <text value="Create Account"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="a6b4d" binding="AccountCreator" layout-manager="GridBagLayout">
+        <constraints>
+          <card name="Card2"/>
+        </constraints>
+        <properties>
+          <background color="-65792"/>
+          <foreground color="-4473925"/>
+          <preferredSize width="650" height="450"/>
+          <visible value="false"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="2978d" class="javax.swing.JLabel" binding="userNameLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="User Name:"/>
+            </properties>
+          </component>
+          <component id="f8bd0" class="javax.swing.JLabel" binding="firstNameLabel">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="First Name:"/>
+            </properties>
+          </component>
+          <component id="40baa" class="javax.swing.JLabel" binding="lastNameLabel">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="Last Name:"/>
+            </properties>
+          </component>
+          <component id="71def" class="javax.swing.JLabel" binding="emailLabel">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="Email"/>
+            </properties>
+          </component>
+          <component id="74cc5" class="javax.swing.JLabel" binding="reEmailLabel">
+            <constraints>
+              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="Re-enter Email:"/>
+            </properties>
+          </component>
+          <component id="6343d" class="javax.swing.JTextField" binding="userNameTF">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <preferredSize width="210" height="35"/>
+            </properties>
+          </component>
+          <component id="5c9db" class="javax.swing.JTextField" binding="firstNameTF">
+            <constraints>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <preferredSize width="210" height="35"/>
+            </properties>
+          </component>
+          <component id="f2b0a" class="javax.swing.JTextField" binding="lastNameTF">
+            <constraints>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <preferredSize width="210" height="35"/>
+            </properties>
+          </component>
+          <component id="7298b" class="javax.swing.JTextField" binding="emailTF">
+            <constraints>
+              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <preferredSize width="210" height="35"/>
+            </properties>
+          </component>
+          <component id="336aa" class="javax.swing.JTextField" binding="reEmailTF">
+            <constraints>
+              <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <preferredSize width="210" height="35"/>
+            </properties>
+          </component>
+          <component id="96573" class="javax.swing.JButton" binding="submitButton" default-binding="true">
+            <constraints>
+              <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="20"/>
+              <foreground color="-16777216"/>
+              <text value="Submit"/>
+            </properties>
+          </component>
+          <component id="2e560" class="javax.swing.JLabel" binding="titleLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="28"/>
+              <foreground color="-16777216"/>
+              <text value="     Create Account"/>
+            </properties>
+          </component>
+          <vspacer id="e93a6">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="20" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="be867">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="5" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="e9c4b">
+            <constraints>
+              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="5" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="43b8a">
+            <constraints>
+              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="5" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="2d486">
+            <constraints>
+              <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="5" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <vspacer id="5be3a">
+            <constraints>
+              <grid row="11" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <gridbag top="0" left="0" bottom="5" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+          </vspacer>
+          <component id="40731" class="javax.swing.JLabel" binding="userNameErrorLabel">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="15"/>
+              <foreground color="-4521959"/>
+              <preferredSize width="70" height="21"/>
+              <text value=""/>
+              <visible value="false"/>
+            </properties>
+          </component>
+          <component id="63ebd" class="javax.swing.JLabel" binding="firstNameErrorLabel">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="15"/>
+              <foreground color="-4521959"/>
+              <preferredSize width="70" height="21"/>
+              <text value=""/>
+              <visible value="false"/>
+            </properties>
+          </component>
+          <component id="79dc" class="javax.swing.JLabel" binding="lastNameErrorLabel">
+            <constraints>
+              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="15"/>
+              <foreground color="-4521959"/>
+              <preferredSize width="70" height="21"/>
+              <text value=""/>
+              <visible value="false"/>
+            </properties>
+          </component>
+          <component id="aec0f" class="javax.swing.JLabel" binding="emailErrorLabel">
+            <constraints>
+              <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="15"/>
+              <foreground color="-4521959"/>
+              <preferredSize width="70" height="21"/>
+              <text value=""/>
+              <visible value="true"/>
+            </properties>
+          </component>
+          <component id="6deb" class="javax.swing.JLabel" binding="reEmailErrorLabel">
+            <constraints>
+              <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <font name="Ayuthaya" size="15"/>
+              <foreground color="-4521959"/>
+              <preferredSize width="70" height="21"/>
+              <text value=""/>
+              <visible value="true"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="ec46a" binding="UserView" layout-manager="GridBagLayout">
+        <constraints>
+          <card name="Card3"/>
+        </constraints>
+        <properties>
+          <background color="-16729039"/>
+          <preferredSize width="650" height="450"/>
+          <visible value="false"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="b9260" class="javax.swing.JLabel" binding="h">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="1.0" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <font size="48"/>
+              <foreground color="-1"/>
+              <text value="Hello There"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

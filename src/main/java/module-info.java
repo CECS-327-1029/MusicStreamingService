@@ -1,5 +1,6 @@
 module streamingservice {
-    requires javafx.controls;
+    opens streamingservice.music;
+    opens streamingservice.music.songinfo;
     requires javazoom;
     requires com.google.gson;
     requires java.desktop;
