@@ -47,8 +47,12 @@ public class MainUI {
     private JLabel emailErrorLabel;
     private JLabel reEmailErrorLabel;
     private JButton submitButton;
-    private JLabel h;
     private JButton createAccountBtn;
+    private JComboBox comboBox1;
+    private JTextField textField1;
+    private JPanel Left;
+    private JPanel Center;
+    private JPanel Right;
     private JPanel playMusicPage;
 
 
@@ -58,8 +62,10 @@ public class MainUI {
         root.setLayout(cardLayout);
         root.add(LogIn, "Log In");
         root.add(AccountCreator, "Create Account");
+        UserView.add(Left, "Left");
+        UserView.add(Center, "Center");
+        UserView.add(Right, "Right");
         root.add(UserView, "User View");
-        root.add(playMusicPage, "Play Music");
         cardLayout.show(root, "Log In");
 
         createAccountBtn.addActionListener(e -> {
