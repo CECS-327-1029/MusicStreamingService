@@ -50,20 +50,24 @@ public class MainUI {
     private JButton createAccountBtn;
     private JLabel userNameDisplay;
     private JComboBox searchFilter;
-    private JTextField searchBox;
-    private JLabel songList;
-    private JButton CREATEButton;
+    private JLabel songListLabel;
+    private JButton addPlaylistButton;
     private JList playlistList;
     private JList listOfSongs;
     private JLabel currentSong;
     private JLabel currentArtist;
     private JLabel currentAlbum;
-    private JButton REPEATButton;
-    private JButton PREVIOUSButton;
-    private JButton PLAYButton;
-    private JButton NEXTButton;
-    private JButton SHUFFLEButton;
-    private JList listOfPosibleSongs;
+    private JButton repeatButton;
+    private JButton previousButton;
+    private JButton playButton;
+    private JButton nextButton;
+    private JButton shuffleButton;
+    private JButton searchButton;
+    private JPanel songListPanel;
+    private JPanel playlistPanel;
+    private JLabel playlistLabel;
+    private JPanel musicPlayerPanel;
+    private JTextField searchTF;
 
 
     public MainUI() throws IOException {
