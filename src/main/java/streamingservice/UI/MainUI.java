@@ -48,6 +48,22 @@ public class MainUI {
     private JLabel reEmailErrorLabel;
     private JButton submitButton;
     private JButton createAccountBtn;
+    private JLabel userNameDisplay;
+    private JComboBox searchFilter;
+    private JTextField searchBox;
+    private JLabel songList;
+    private JButton CREATEButton;
+    private JList playlistList;
+    private JList listOfSongs;
+    private JLabel currentSong;
+    private JLabel currentArtist;
+    private JLabel currentAlbum;
+    private JButton REPEATButton;
+    private JButton PREVIOUSButton;
+    private JButton PLAYButton;
+    private JButton NEXTButton;
+    private JButton SHUFFLEButton;
+    private JList listOfPosibleSongs;
 
 
     public MainUI() throws IOException {
