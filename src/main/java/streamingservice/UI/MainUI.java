@@ -2,16 +2,20 @@ package streamingservice.UI;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import streamingservice.music.Song;
 import streamingservice.music.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainUI {
@@ -20,9 +24,11 @@ public class MainUI {
     private static final int FRAME_HEIGHT = 600;
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
+    private static final String[] SEARCH_FILTERS = {"--- Search by ---", "Songs", "Artists"};
 
     private Gson gson;
     private List<User> users;
+    private List<Song> songs;
 
     private CardLayout cardLayout;
 
@@ -48,7 +54,7 @@ public class MainUI {
     private JLabel reEmailErrorLabel;
     private JButton submitButton;
     private JButton createAccountBtn;
-    private JLabel userNameDisplay;
+    private JLabel userNameDisplayLabel;
     private JComboBox searchFilter;
     private JLabel songListLabel;
     private JButton addPlaylistButton;
@@ -68,6 +74,7 @@ public class MainUI {
     private JLabel playlistLabel;
     private JPanel musicPlayerPanel;
     private JTextField searchTF;
+    //private JScrollPane listOfSongsScrollBar;
 
 
     public MainUI() throws IOException {
@@ -77,7 +84,14 @@ public class MainUI {
         root.add(LogIn, "Log In");
         root.add(AccountCreator, "Create Account");
         root.add(UserView, "User View");
-        cardLayout.show(root, "Log In");
+
+        listOfSongs.setBorder(BorderFactory.createLineBorder(Color.black));
+        playlistList.setBorder(BorderFactory.createLineBorder(Color.black));
+        searchFilter.setModel(new DefaultComboBoxModel(SEARCH_FILTERS));
+
+        //listOfSongsScrollBar = new JScrollPane(listOfSongs);
+
+        cardLayout.show(root, "User View");
 
         createAccountBtn.addActionListener(e -> {
             cardLayout.show(root, "Create Account");
@@ -86,10 +100,42 @@ public class MainUI {
 
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
-                //createAccount();
+                createAccount();
+                userNameDisplayLabel.setText(userNameTF.getText());
                 cardLayout.show(root, "User View");
             }
         });
+
+        searchButton.addActionListener(e -> {
+            if (!searchTF.getText().trim().toLowerCase().equals("")) {
+                String selectedItem = searchFilter.getSelectedItem().toString();
+                if (selectedItem.equals("Songs")) {
+                    // search by songs
+                    searchBySongs();
+                }
+                else if (selectedItem.equals("Artists")) {
+                    // search for songs
+
+                }
+            }
+        });
+
+        /*
+        listOfSongs.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JList theList = (JList) e.getSource();
+                if (e.getClickCount() == 2) {
+                    int index = theList.locationToIndex(e.getPoint());
+                    if (index >= 0) {
+                        Object o = theList.getModel().getElementAt(index);
+                        System.out.println("Double-clicked on: " + o.toString());
+                    }
+                }
+            }
+        });
+        */
+
 
         JFrame mainFrame = new JFrame("Music Streaming Service");
         mainFrame.add(root);
@@ -101,13 +147,26 @@ public class MainUI {
         mainFrame.setResizable(false);
 
         gson = new Gson();
-        Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
-        users = gson.fromJson(reader, new TypeToken<List<User>>() {}.getType());
+        Reader userReader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
+        Reader musicReader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH));
+        users = gson.fromJson(userReader, new TypeToken<List<User>>() {}.getType());
+        songs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
+    }
+
+    private void searchBySongs() {
+        ArrayList<Song> songsFound = new ArrayList<>();
+        for (Song song : songs) {
+            if (song.getSong().getTitle().toLowerCase().contains(searchTF.getText().trim().toLowerCase())) {
+                songsFound.add(song);
+                System.out.println(song.getSong().getTitle());
+            }
+        }
 
     }
 
     private void createAccount() {
         User newUser = new User(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
+        //userNameDisplayLabel.setText(userNameTF.getText());
         if (users == null) {
             users = new ArrayList<>();
         }
@@ -203,8 +262,6 @@ public class MainUI {
                 }
             }
         }
-
-
         if (isFreeToUse) {
             emailErrorLabel.setText("Email already In Use");
             emailErrorLabel.setVisible(true);
@@ -236,7 +293,4 @@ public class MainUI {
         frame.setResizable(false);
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
 }
