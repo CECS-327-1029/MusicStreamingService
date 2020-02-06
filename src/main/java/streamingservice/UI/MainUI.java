@@ -1,6 +1,9 @@
 package streamingservice.UI;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -82,16 +85,26 @@ public class MainUI {
     private JPanel playlistHolderLabel;
     private DefaultListModel<String> listModel;
 
+    private JLabel newUserLabel;
+    private JLabel usernameLabel;
+    private JTextField usernameInput;
+    private JButton loginButton;
+    private JLabel usernameNotFoundLabel;
+
     private boolean showingArtists = false;
     private String artistSelected;
     private HashMap<String, ArrayList<Song>> artistSongs;
     private JList<String> artistList;
     private DefaultListModel<String> artistModel;
 
+    private Player player;
+
+    private boolean isSongPlaying = false;
+
     public MainUI() throws IOException, JavaLayerException {
 
         InputStream stream = new CECS327InputStream(SONG_TO_PLAY);
-        Player player = new Player(stream);
+        player = new Player(stream);
 
         cardLayout = new CardLayout();
         root.setLayout(cardLayout);
@@ -99,6 +112,7 @@ public class MainUI {
         root.add(AccountCreator, "Create Account");
         root.add(UserView, "User View");
 
+        cardLayout.show(root, "Log In");
 
         searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
 
@@ -125,9 +139,18 @@ public class MainUI {
         artistList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         songListHolderPanel.add(new JScrollPane(artistList), "Artist's Songs");
 
-        cardLayout.show(root, "User View");
+        createAccountBtn.addActionListener(e -> {
+            cardLayout.show(root, "Create Account");
+        });
 
-        createAccountBtn.addActionListener(e -> cardLayout.show(root, "Create Account"));
+        loginButton.addActionListener(e ->{
+            if(validateUsername(usernameInput.getText())){
+                cardLayout.show(root, "User View");
+            }else{
+                usernameInput.setText("");
+                usernameNotFoundLabel.setVisible(true);
+            }
+        });
 
 
         submitButton.addActionListener(e -> {
@@ -156,7 +179,11 @@ public class MainUI {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    playSongWhenSelected();
+                    try {
+                        playSongWhenSelected();
+                    } catch (JavaLayerException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -177,7 +204,11 @@ public class MainUI {
                         showingArtists = true;
                         artistSelected = null;
                     } else if (!showingArtists && index > 0) {
-                        playSongWhenSelected();
+                        try {
+                            playSongWhenSelected();
+                        } catch (JavaLayerException e) {
+                            e.printStackTrace();
+                        }
                     } else if (showingArtists) {
                         // display the name of songs by artistSelected
                         artistModel.clear();
@@ -193,7 +224,11 @@ public class MainUI {
         });
 
         playButton.addActionListener(e -> {
-            playSongWhenSelected();
+            try {
+                playSongWhenSelected();
+            } catch (JavaLayerException ex) {
+                ex.printStackTrace();
+            }
         });
 
         mainFrame = new JFrame();
@@ -213,7 +248,7 @@ public class MainUI {
         allSongs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
     }
 
-    private void playSongWhenSelected() {
+    private void playSongWhenSelected() throws JavaLayerException {
         String view = Objects.requireNonNull(searchFilter.getSelectedItem()).toString();
         Song songChosen = null;
         if (listOfSongs.getSelectedIndex() != -1 && view.equals("Songs")) {
@@ -382,6 +417,43 @@ public class MainUI {
             reEmailErrorLabel.setVisible(false);
         }
         return isSame;
+    }
+
+    private boolean validateUsername(String username){
+        boolean ifFound = false;
+
+        JsonParser jsonParser = new JsonParser();
+
+        try(FileReader reader = new FileReader(USER_FILE_PATH)){
+            //Read Json file
+            Object obj = jsonParser.parse(reader);
+
+            JsonArray userList = (JsonArray) obj;
+
+            /*checks to see if the json file is empty. If the json file is not empty then the method
+             * will iterate through all the json file to find the userName that the user input */
+            if(userList.size() != 0){
+                //iterate through the file
+                for(int i = 0; i < userList.size(); i++){
+                    JsonObject userObject = (JsonObject) userList.get(i);
+
+                    //is saving the userName of userObject
+                    String userNameIs = userObject.get("userName").toString();
+                    //removing the "" from the string
+                    userNameIs = userNameIs.replace("\"", "");
+
+                    //checks to see if the names are the samve
+                    if(username.equals(userNameIs)){
+                        ifFound = true;
+                    }
+                }
+            }
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return ifFound;
     }
 
     private void showErrorWindow() {
