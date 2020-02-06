@@ -173,24 +173,30 @@ public class MainUI {
             }
         });
 
+        // button is in the user view screen
+        // will search by the option given in the searchFiler combo box
         searchButton.addActionListener(e -> {
             if (!searchTF.getText().trim().toLowerCase().equals("")) {  // textField not empty
                 String selectedItem = Objects.requireNonNull(searchFilter.getSelectedItem()).toString();
-                if (selectedItem.equals("Songs")) {
+                if (selectedItem.equals("Songs")) { // search by songs
+                    // transition to the card that will display the songs
                     songArtistLayout.show(songListHolderPanel, "Display Songs");
                     searchBySongs();
                 }
-                else if (selectedItem.equals("Artists")) {
+                else if (selectedItem.equals("Artists")) {  // search by artists
+                    // transition to the card that will display the artists
                     songArtistLayout.show(songListHolderPanel, "Artist's Songs");
                     searchByArtists();
                 }
             }
         });
 
+        // if an item from the card that shows the list of songs search was double clicked,
+        // then the song should begin playing
         listOfSongs.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2) {   // captures a mouse double-click
                     try {
                         playSongWhenSelected();
                     } catch (JavaLayerException ex) {
@@ -203,19 +209,23 @@ public class MainUI {
         artistList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 JList list = (JList)evt.getSource();
-                if (evt.getClickCount() == 2) {
-                    // Double-click detected
+                if (evt.getClickCount() == 2) { // captures a mouse double-click
+                    // get the index of the item clicked on
                     int index = list.locationToIndex(evt.getPoint());
+                    // if we are displaying the songs from a certain artist and the user wants to go
+                    // back to view all artists searched...
                     if (!showingArtists && index == 0) {
-                        // display the artists names
+                        // clear the model that contains the list of an artist's songs
+                        // and populate it with artist's
                         artistModel.clear();
-                        for (String str : artistSongs.keySet()) {
-                            artistModel.addElement(str);
-                        }
+                        artistSongs.keySet().forEach(k -> artistModel.addElement(k));
                         artistList.setModel(artistModel);
+                        // showingArtists determines if we are viewing the names of artists or a particular artist's songs
                         showingArtists = true;
                         artistSelected = null;
-                    } else if (!showingArtists && index > 0) {
+                    }
+                    // if a user double clicks on an artist's song, play the song
+                    else if (!showingArtists && index > 0) {
                         try {
                             playSongWhenSelected();
                         } catch (JavaLayerException e) {
@@ -223,11 +233,15 @@ public class MainUI {
                         }
                     } else if (showingArtists) {
                         // display the name of songs by artistSelected
-                        artistModel.clear();
                         showingArtists = false;
+                        // artistSelected holds the name of the artist that was chosen to view their songs
                         artistSelected = (String) artistSongs.keySet().toArray()[index];
+                        // get the songs of this particular artist
                         ArrayList<Song> songs = artistSongs.get(artistSongs.keySet().toArray()[index]);
-                        artistModel.addElement("...");
+                        artistModel.addElement("...");  // this is an element to go back
+                        // clear the model that contains a list of artists and populate it with
+                        // the songs from the artist selected
+                        artistModel.clear();
                         songs.forEach(k -> artistModel.addElement(k.getSong().getTitle()));
                         artistList.setModel(artistModel);
                     }
@@ -235,6 +249,7 @@ public class MainUI {
             }
         });
 
+        // when the user clicks on the playButton, a selected song will play
         playButton.addActionListener(e -> {
             try {
                 playSongWhenSelected();
@@ -243,6 +258,7 @@ public class MainUI {
             }
         });
 
+        // sets up the frame that will display our screens
         mainFrame = new JFrame();
         mainFrame.add(root);
         mainFrame.pack();
@@ -253,20 +269,30 @@ public class MainUI {
         mainFrame.setVisible(true);
         mainFrame.setResizable(false);
 
+        // load all the users and songs in the system
         gson = new Gson();
-        Reader userReader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
-        Reader musicReader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH));
-        allUsers = gson.fromJson(userReader, new TypeToken<List<User>>() {}.getType());
-        allSongs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
+        allUsers = gson.fromJson(Files.newBufferedReader(Paths.get(USER_FILE_PATH)),
+                                new TypeToken<List<User>>() {}.getType());
+        allSongs = gson.fromJson(Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH)),
+                                new TypeToken<List<Song>>() {}.getType());
     }
 
+    /**
+     * Will display the title, artist, and album information on the top of the window
+     * whenever a song is selected from their respective list. The corresponding song will
+     * also start playing
+     *
+     * @throws JavaLayerException
+     */
     private void playSongWhenSelected() throws JavaLayerException {
         String view = Objects.requireNonNull(searchFilter.getSelectedItem()).toString();
         Song songChosen = null;
+        // if searching by "Songs" and a song is selected get the song
         if (listOfSongs.getSelectedIndex() != -1 && view.equals("Songs")) {
             songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
         }
 
+        // if searching by "Artists" and a song is selected
         if (artistList.getSelectedIndex() > 0 && !showingArtists && view.equals("Artists")) {
             songChosen = artistSongs.get(artistSelected).get(artistList.getSelectedIndex() - 1);
         }
@@ -277,6 +303,7 @@ public class MainUI {
             String artist = songChosen.getArtist().getName();
 
             mainFrame.setTitle(title + " by " + album + " from " + artist);
+            //player.play();
         }
     }
 
