@@ -155,6 +155,7 @@ public class MainUI {
             // if the user is in the system show them their profile
             if(validateUsername(usernameInput.getText())){
                 cardLayout.show(root, "User View");
+                userNameDisplayLabel.setText(usernameInput.getText());
             }else{
                 // show the user that they weren't found
                 usernameInput.setText("");
@@ -166,7 +167,7 @@ public class MainUI {
         // check if the user has entered valid information
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
-                createAccount();
+                createAccount();    // write their information to the users.json file
                 userNameDisplayLabel.setText(userNameTF.getText()); // displays the users name
                 cardLayout.show(root, "User View"); // go to user's profile
             }
