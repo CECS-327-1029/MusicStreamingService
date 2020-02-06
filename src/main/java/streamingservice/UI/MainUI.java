@@ -2,7 +2,9 @@ package streamingservice.UI;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.w3c.dom.ls.LSOutput;
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
+import streamingservice.CECS327InputStream;
 import streamingservice.music.Song;
 import streamingservice.music.User;
 import streamingservice.music.songinfo.Artist;
@@ -21,9 +23,12 @@ public class MainUI {
 
     private static final int FRAME_WIDTH = 900;
     private static final int FRAME_HEIGHT = 600;
+    private static final String SONG_TO_PLAY = "resources" + System.getProperty("file.separator") + "imperial.mp3";
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
     private static final String[] SEARCH_FILTERS = {"--- Search by ---", "Songs", "Artists"};
+
+    private static final boolean PLAYING_SONG = false;
 
     private Gson gson;
     private List<User> allUsers;
@@ -77,12 +82,17 @@ public class MainUI {
     private JPanel playlistHolderLabel;
     private DefaultListModel<String> listModel;
 
-    private HashMap<String, List<Song>> artistSongs;
+    private boolean showingArtists = false;
+    private String artistSelected;
+    private HashMap<String, ArrayList<Song>> artistSongs;
     private JList<String> artistList;
     private DefaultListModel<String> artistModel;
 
 
-    public MainUI() throws IOException {
+    public MainUI() throws IOException, JavaLayerException {
+
+        InputStream stream = new CECS327InputStream(SONG_TO_PLAY);
+        Player player = new Player(stream);
 
         cardLayout = new CardLayout();
         root.setLayout(cardLayout);
@@ -118,9 +128,7 @@ public class MainUI {
 
         cardLayout.show(root, "User View");
 
-        createAccountBtn.addActionListener(e -> {
-            cardLayout.show(root, "Create Account");
-        });
+        createAccountBtn.addActionListener(e -> cardLayout.show(root, "Create Account"));
 
 
         submitButton.addActionListener(e -> {
@@ -151,20 +159,29 @@ public class MainUI {
                 if (evt.getClickCount() == 2) {
                     // Double-click detected
                     int index = list.locationToIndex(evt.getPoint());
-                    System.out.println(index);
+                    if (!showingArtists && index == 0) {
+                        artistModel.clear();
+                        for (String str : artistSongs.keySet()) {
+                            artistModel.addElement(str);
+                        }
+                        artistList.setModel(artistModel);
+                        showingArtists = true;
+                        artistSelected = null;
+                    } else if (showingArtists) {
+                        artistModel.clear();
+                        showingArtists = false;
+                        artistSelected = (String) artistSongs.keySet().toArray()[index];
+                        ArrayList<Song> songs = artistSongs.get(artistSongs.keySet().toArray()[index]);
+                        artistModel.addElement("...");
+                        songs.forEach(k -> artistModel.addElement(k.getSong().getTitle()));
+                        artistList.setModel(artistModel);
+                    }
                 }
             }
         });
 
         playButton.addActionListener(e -> {
-            if (listOfSongs.getSelectedIndex() != -1) {
-                Song songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
-                String title = songChosen.getSong().getTitle();
-                String album = songChosen.getRelease().getName();
-                String artist = songChosen.getArtist().getName();
-
-                mainFrame.setTitle(title + " by " + album + " from " + artist);
-            }
+            playSongWhenSelected();
         });
 
         mainFrame = new JFrame();
@@ -184,6 +201,25 @@ public class MainUI {
         allSongs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
     }
 
+    private void playSongWhenSelected() {
+        Song songChosen = null;
+        if (listOfSongs.getSelectedIndex() != -1) {
+            songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
+        }
+
+        if (artistList.getSelectedIndex() > 0 && !showingArtists) {
+            songChosen = artistSongs.get(artistSelected).get(artistList.getSelectedIndex() - 1);
+        }
+
+        if (songChosen  != null) {
+            String title = songChosen.getSong().getTitle();
+            String album = songChosen.getRelease().getName();
+            String artist = songChosen.getArtist().getName();
+
+            mainFrame.setTitle(title + " by " + album + " from " + artist);
+        }
+    }
+
     private void searchBySongs() {
         listModel.clear();
         songsOnDisplay.clear();
@@ -198,14 +234,16 @@ public class MainUI {
     }
 
     private void searchByArtists() {
+        showingArtists = true;
         artistModel.clear();
         artistSongs.clear();
         for (Song song : allSongs) {
             Artist artist = song.getArtist();
 
-            if (artist.getName().toLowerCase().contains(searchTF.getText().trim().toLowerCase())
-                                                            && !artistSongs.containsKey(artist.getName())) {
-                artistSongs.put(artist.getName(), new ArrayList<>());
+            if (artist.getName().toLowerCase().contains(searchTF.getText().trim().toLowerCase())) {
+                if (!artistSongs.containsKey(artist.getName())) {
+                    artistSongs.put(artist.getName(), new ArrayList<>());
+                }
                 artistSongs.get(artist.getName()).add(song);
             }
         }
