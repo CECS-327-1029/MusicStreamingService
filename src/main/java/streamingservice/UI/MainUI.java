@@ -88,7 +88,6 @@ public class MainUI {
     private JList<String> artistList;
     private DefaultListModel<String> artistModel;
 
-
     public MainUI() throws IOException, JavaLayerException {
 
         InputStream stream = new CECS327InputStream(SONG_TO_PLAY);
@@ -153,6 +152,15 @@ public class MainUI {
             }
         });
 
+        listOfSongs.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    playSongWhenSelected();
+                }
+            }
+        });
+
         artistList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 JList list = (JList)evt.getSource();
@@ -160,6 +168,7 @@ public class MainUI {
                     // Double-click detected
                     int index = list.locationToIndex(evt.getPoint());
                     if (!showingArtists && index == 0) {
+                        // display the artists names
                         artistModel.clear();
                         for (String str : artistSongs.keySet()) {
                             artistModel.addElement(str);
@@ -167,7 +176,10 @@ public class MainUI {
                         artistList.setModel(artistModel);
                         showingArtists = true;
                         artistSelected = null;
+                    } else if (!showingArtists && index > 0) {
+                        playSongWhenSelected();
                     } else if (showingArtists) {
+                        // display the name of songs by artistSelected
                         artistModel.clear();
                         showingArtists = false;
                         artistSelected = (String) artistSongs.keySet().toArray()[index];
@@ -202,12 +214,13 @@ public class MainUI {
     }
 
     private void playSongWhenSelected() {
+        String view = Objects.requireNonNull(searchFilter.getSelectedItem()).toString();
         Song songChosen = null;
-        if (listOfSongs.getSelectedIndex() != -1) {
+        if (listOfSongs.getSelectedIndex() != -1 && view.equals("Songs")) {
             songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
         }
 
-        if (artistList.getSelectedIndex() > 0 && !showingArtists) {
+        if (artistList.getSelectedIndex() > 0 && !showingArtists && view.equals("Artists")) {
             songChosen = artistSongs.get(artistSelected).get(artistList.getSelectedIndex() - 1);
         }
 
