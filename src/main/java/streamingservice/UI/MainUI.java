@@ -292,12 +292,12 @@ public class MainUI {
             songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
         }
 
-        // if searching by "Artists" and a song is selected
+        // if searching by "Artists" and a song is selected, and we are viewing a list of an artist's songs, get the song
         if (artistList.getSelectedIndex() > 0 && !showingArtists && view.equals("Artists")) {
             songChosen = artistSongs.get(artistSelected).get(artistList.getSelectedIndex() - 1);
         }
 
-        if (songChosen  != null) {
+        if (songChosen != null) {  // if a song is chosen, display the song on the top of the window
             String title = songChosen.getSong().getTitle();
             String album = songChosen.getRelease().getName();
             String artist = songChosen.getArtist().getName();
@@ -307,6 +307,11 @@ public class MainUI {
         }
     }
 
+    /**
+     * Searches for a song based on the keyword given from the user in the search text field. If a song title
+     * contains the sequence of characters in the given text, then it will be added to the list of songs that
+     * will be displayed to the user.
+     */
     private void searchBySongs() {
         listModel.clear();
         songsOnDisplay.clear();
@@ -320,6 +325,12 @@ public class MainUI {
         listOfSongs.setModel(listModel);
     }
 
+    /**
+     * Searches for an artist whose name contains the sequence of characters given by the user in the
+     * search text field. If an artist is found, then add their name to the list that will be displayed
+     * to the user. The artist is also stored in a HashMap with their name as their key and an ArrayList of their
+     * corresponding songs.
+     */
     private void searchByArtists() {
         showingArtists = true;
         artistModel.clear();
@@ -334,11 +345,14 @@ public class MainUI {
                 artistSongs.get(artist.getName()).add(song);
             }
         }
-
         for (String str : artistSongs.keySet()) { artistModel.addElement(str); }
         artistList.setModel(artistModel);
     }
 
+    /**
+     * When a user creates a new account and all fields are valid, then we'll save the information given
+     * to the users.json file.
+     */
     private void createAccount() {
         User newUser = new User(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
         if (allUsers == null) {
@@ -346,6 +360,7 @@ public class MainUI {
         }
         allUsers.add(newUser);
         try {
+            // write the updated list to the file.
             Writer writer = Files.newBufferedWriter(Paths.get(USER_FILE_PATH));
             gson.toJson(allUsers, writer);
             writer.close();
