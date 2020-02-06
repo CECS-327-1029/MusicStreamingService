@@ -15,22 +15,24 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MainUI {
 
-    private static final int FRAME_WIDTH = 800;
+    private static final int FRAME_WIDTH = 900;
     private static final int FRAME_HEIGHT = 600;
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
     private static final String[] SEARCH_FILTERS = {"--- Search by ---", "Songs", "Artists"};
 
     private Gson gson;
-    private List<User> users;
-    private List<Song> songs;
+    private List<User> allUsers;
+    private List<Song> allSongs;
+    private List<Song> songsOnDisplay;
 
     private CardLayout cardLayout;
+    private JFrame mainFrame;
 
     private JPanel root;
     private JPanel LogIn;
@@ -55,14 +57,11 @@ public class MainUI {
     private JButton submitButton;
     private JButton createAccountBtn;
     private JLabel userNameDisplayLabel;
-    private JComboBox searchFilter;
+    private JComboBox<String> searchFilter;
     private JLabel songListLabel;
     private JButton addPlaylistButton;
-    private JList playlistList;
-    private JList listOfSongs;
-    private JLabel currentSong;
-    private JLabel currentArtist;
-    private JLabel currentAlbum;
+    private JList<String> playlistList;
+    private JList<String> listOfSongs;
     private JButton repeatButton;
     private JButton previousButton;
     private JButton playButton;
@@ -74,8 +73,9 @@ public class MainUI {
     private JLabel playlistLabel;
     private JPanel musicPlayerPanel;
     private JTextField searchTF;
-    //private JScrollPane listOfSongsScrollBar;
-
+    private JPanel songListHolderPanel;
+    private JPanel playlistHolderLabel;
+    private DefaultListModel<String> listModel;
 
     public MainUI() throws IOException {
 
@@ -85,11 +85,18 @@ public class MainUI {
         root.add(AccountCreator, "Create Account");
         root.add(UserView, "User View");
 
-        listOfSongs.setBorder(BorderFactory.createLineBorder(Color.black));
-        playlistList.setBorder(BorderFactory.createLineBorder(Color.black));
-        searchFilter.setModel(new DefaultComboBoxModel(SEARCH_FILTERS));
+        searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
 
-        //listOfSongsScrollBar = new JScrollPane(listOfSongs);
+        songsOnDisplay = new ArrayList<>();
+
+        listModel = new DefaultListModel<>();
+        listOfSongs = new JList<>(listModel);
+        listOfSongs.setSelectionBackground(Color.red);
+        listOfSongs.setFont(new Font("Ayuthaya", Font.PLAIN,14));
+        listOfSongs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        songListHolderPanel.add(new JScrollPane(listOfSongs));
+
 
         cardLayout.show(root, "User View");
 
@@ -101,45 +108,38 @@ public class MainUI {
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
                 createAccount();
-                userNameDisplayLabel.setText(userNameTF.getText());
-                cardLayout.show(root, "User View");
+                userNameDisplayLabel.setText(userNameTF.getText()); // displays the users name
+                cardLayout.show(root, "User View"); // go to user's profile
             }
         });
 
         searchButton.addActionListener(e -> {
-            if (!searchTF.getText().trim().toLowerCase().equals("")) {
-                String selectedItem = searchFilter.getSelectedItem().toString();
+            if (!searchTF.getText().trim().toLowerCase().equals("")) {  // textField not empty
+                String selectedItem = Objects.requireNonNull(searchFilter.getSelectedItem()).toString();
                 if (selectedItem.equals("Songs")) {
-                    // search by songs
                     searchBySongs();
                 }
                 else if (selectedItem.equals("Artists")) {
-                    // search for songs
-
+                    searchByArtists();
                 }
             }
         });
 
-        /*
-        listOfSongs.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JList theList = (JList) e.getSource();
-                if (e.getClickCount() == 2) {
-                    int index = theList.locationToIndex(e.getPoint());
-                    if (index >= 0) {
-                        Object o = theList.getModel().getElementAt(index);
-                        System.out.println("Double-clicked on: " + o.toString());
-                    }
-                }
+        playButton.addActionListener(e -> {
+            if (listOfSongs.getSelectedIndex() != -1) {
+                Song songChosen = songsOnDisplay.get(listOfSongs.getSelectedIndex());
+                String title = songChosen.getSong().getTitle();
+                String album = songChosen.getRelease().getName();
+                String artist = songChosen.getArtist().getName();
+
+                mainFrame.setTitle(title + " by " + album + " from " + artist);
             }
         });
-        */
 
-
-        JFrame mainFrame = new JFrame("Music Streaming Service");
+        mainFrame = new JFrame();
         mainFrame.add(root);
         mainFrame.pack();
+        mainFrame.setFont(new Font("Courier", Font.BOLD, 20));
         mainFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
@@ -149,31 +149,38 @@ public class MainUI {
         gson = new Gson();
         Reader userReader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
         Reader musicReader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH));
-        users = gson.fromJson(userReader, new TypeToken<List<User>>() {}.getType());
-        songs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
+        allUsers = gson.fromJson(userReader, new TypeToken<List<User>>() {}.getType());
+        allSongs = gson.fromJson(musicReader, new TypeToken<List<Song>>() {}.getType());
     }
 
     private void searchBySongs() {
-        ArrayList<Song> songsFound = new ArrayList<>();
-        for (Song song : songs) {
-            if (song.getSong().getTitle().toLowerCase().contains(searchTF.getText().trim().toLowerCase())) {
-                songsFound.add(song);
-                System.out.println(song.getSong().getTitle());
+        listModel.clear();
+        songsOnDisplay.clear();
+        for (Song song : allSongs) {
+            String title = song.getSong().getTitle();
+            if (title.toLowerCase().contains(searchTF.getText().trim().toLowerCase())) {
+                listModel.addElement(title);
+                songsOnDisplay.add(song);
             }
         }
+        listOfSongs.setModel(listModel);
+    }
+
+    private void searchByArtists() {
+        listModel.clear();
+
 
     }
 
     private void createAccount() {
         User newUser = new User(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
-        //userNameDisplayLabel.setText(userNameTF.getText());
-        if (users == null) {
-            users = new ArrayList<>();
+        if (allUsers == null) {
+            allUsers = new ArrayList<>();
         }
-        users.add(newUser);
+        allUsers.add(newUser);
         try {
             Writer writer = Files.newBufferedWriter(Paths.get(USER_FILE_PATH));
-            gson.toJson(users, writer);
+            gson.toJson(allUsers, writer);
             writer.close();
         } catch (IOException e) {
             showErrorWindow();
@@ -236,9 +243,9 @@ public class MainUI {
 
     private boolean isUserNameFreeToUse() {
         boolean isFreeToUse = true;
-        if (users != null) {
-            for (int i = 0; i < users.size() && isFreeToUse; i++) {
-                if (users.get(i).getUserName().equals(userNameTF.getText())) {
+        if (allUsers != null) {
+            for (int i = 0; i < allUsers.size() && isFreeToUse; i++) {
+                if (allUsers.get(i).getUserName().equals(userNameTF.getText())) {
                     isFreeToUse = false;
                 }
             }
@@ -255,9 +262,9 @@ public class MainUI {
 
     private boolean isEmailFreeToUse() {
         boolean isFreeToUse = true;
-        if (users != null) {
-            for (int i = 0; i < users.size() && isFreeToUse; i++) {
-                if (users.get(i).getEmail().equals(userNameTF.getText())) {
+        if (allUsers != null) {
+            for (int i = 0; i < allUsers.size() && isFreeToUse; i++) {
+                if (allUsers.get(i).getEmail().equals(userNameTF.getText())) {
                     isFreeToUse = false;
                 }
             }

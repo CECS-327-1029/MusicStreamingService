@@ -329,7 +329,7 @@
           </hspacer>
         </children>
       </grid>
-      <grid id="ec46a" binding="UserView" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="ec46a" binding="UserView" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <card name="Card3"/>
@@ -341,7 +341,7 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="819d1" binding="songListPanel" layout-manager="GridLayoutManager" row-count="3" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="819d1" binding="songListPanel" layout-manager="GridLayoutManager" row-count="3" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="true"/>
@@ -351,31 +351,20 @@
             </properties>
             <border type="none"/>
             <children>
-              <component id="1c742" class="javax.swing.JList" binding="listOfSongs">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="5" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="50"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <background color="-5456129"/>
-                  <font name="Ayuthaya" size="14"/>
-                  <selectionBackground color="-5456129"/>
-                </properties>
-              </component>
               <component id="819e9" class="javax.swing.JLabel" binding="userNameDisplayLabel">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="20"/>
                   <foreground color="-13290187"/>
+                  <labelFor value="9138e"/>
                   <text value=""/>
                 </properties>
               </component>
               <component id="9138e" class="javax.swing.JComboBox" binding="searchFilter">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <editable value="false"/>
@@ -384,7 +373,7 @@
               </component>
               <component id="2dd63" class="javax.swing.JTextField" binding="searchTF">
                 <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
@@ -394,31 +383,21 @@
               </component>
               <hspacer id="c2f9a">
                 <constraints>
-                  <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
               <component id="4a6b" class="javax.swing.JButton" binding="searchButton" default-binding="true">
                 <constraints>
-                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
                   <text value="Search"/>
                 </properties>
               </component>
-              <hspacer id="b4a57">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </hspacer>
-              <hspacer id="7ca21">
-                <constraints>
-                  <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </hspacer>
               <component id="6dc3b" class="javax.swing.JLabel" binding="songListLabel">
                 <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="22"/>
@@ -427,12 +406,20 @@
                   <text value="Song List"/>
                 </properties>
               </component>
+              <grid id="99a0" binding="songListHolderPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children/>
+              </grid>
             </children>
           </grid>
           <grid id="1eddd" binding="playlistPanel" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <background color="-12426113"/>
@@ -459,18 +446,6 @@
                   <text value="Add"/>
                 </properties>
               </component>
-              <component id="b2656" class="javax.swing.JList" binding="playlistList">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="50"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <background color="-5456129"/>
-                  <font name="Ayuthaya" size="14"/>
-                  <model/>
-                </properties>
-              </component>
               <hspacer id="1cb2b">
                 <constraints>
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -481,53 +456,30 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
+              <grid id="59b0" binding="playlistHolderLabel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children/>
+              </grid>
             </children>
           </grid>
-          <grid id="2520e" binding="musicPlayerPanel" layout-manager="GridLayoutManager" row-count="3" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="2520e" binding="musicPlayerPanel" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="1" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="1" hsize-policy="3" anchor="2" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <background color="-12426113"/>
             </properties>
             <border type="none"/>
             <children>
-              <component id="55b74" class="javax.swing.JLabel" binding="currentSong">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <font name="Ayuthaya" size="14"/>
-                  <text value=""/>
-                </properties>
-              </component>
-              <vspacer id="75547">
-                <constraints>
-                  <grid row="2" column="4" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </vspacer>
-              <component id="3e59a" class="javax.swing.JLabel" binding="currentArtist">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <font name="Ayuthaya" size="14"/>
-                  <text value=""/>
-                </properties>
-              </component>
-              <component id="b5248" class="javax.swing.JLabel" binding="currentAlbum">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <font name="Ayuthaya" size="14"/>
-                  <text value=""/>
-                </properties>
-              </component>
               <component id="49393" class="javax.swing.JButton" binding="repeatButton">
                 <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
@@ -536,7 +488,7 @@
               </component>
               <component id="5ee7" class="javax.swing.JButton" binding="previousButton">
                 <constraints>
-                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
@@ -545,7 +497,7 @@
               </component>
               <component id="9c625" class="javax.swing.JButton" binding="playButton">
                 <constraints>
-                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
@@ -554,7 +506,7 @@
               </component>
               <component id="f427f" class="javax.swing.JButton" binding="nextButton">
                 <constraints>
-                  <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
@@ -563,7 +515,7 @@
               </component>
               <component id="65d0d" class="javax.swing.JButton" binding="shuffleButton">
                 <constraints>
-                  <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font name="Ayuthaya" size="14"/>
@@ -574,7 +526,17 @@
           </grid>
           <hspacer id="fb9f4">
             <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <hspacer id="76da2">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <hspacer id="8ef2c">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
         </children>
