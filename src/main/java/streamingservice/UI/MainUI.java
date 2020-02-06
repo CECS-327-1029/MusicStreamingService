@@ -106,53 +106,64 @@ public class MainUI {
         InputStream stream = new CECS327InputStream(SONG_TO_PLAY);
         player = new Player(stream);
 
+        // cardlayouts will allow for screen transitions
         cardLayout = new CardLayout();
         root.setLayout(cardLayout);
         root.add(LogIn, "Log In");
         root.add(AccountCreator, "Create Account");
         root.add(UserView, "User View");
-
         cardLayout.show(root, "Log In");
 
+        // sets search to have values to search by
         searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
 
+        // hold the list songs that were found when searched
         songsOnDisplay = new ArrayList<>();
-
+        // following allows for viewing the songs found
         listModel = new DefaultListModel<>();
         listOfSongs = new JList<>(listModel);
         listOfSongs.setSelectionBackground(Color.red);
-        listOfSongs.setFont(new Font("Ayuthaya", Font.PLAIN,14));
+        listOfSongs.setFont(new Font("Ayuthaya", Font.PLAIN, 16));
         listOfSongs.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-
+        // cardholder to transition between displaying the songs and artists
         songArtistLayout = new CardLayout();
-        songListHolderPanel.setLayout(songArtistLayout);
+        songListHolderPanel.setLayout(songArtistLayout);    // add the layout to the panel
 
+        // allows us to scroll through the display of songs
         songListHolderPanel.add(new JScrollPane(listOfSongs), "Display Songs");
 
-
+        // will hold all artists and their corresponding songs
         artistSongs = new HashMap<>();
+        // following allows for viewing the artists found
         artistModel = new DefaultListModel<>();
         artistList = new JList<>(artistModel);
         artistList.setSelectionBackground(Color.red);
-        artistList.setFont(new Font("Ayuthaya", Font.PLAIN,14));
+        artistList.setFont(new Font("Ayuthaya", Font.PLAIN,16));
         artistList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // allows us to scroll through the display of artists
         songListHolderPanel.add(new JScrollPane(artistList), "Artist's Songs");
 
+        // button is in the log in screen.
+        // moves the user to the screen where they will create an account
         createAccountBtn.addActionListener(e -> {
             cardLayout.show(root, "Create Account");
         });
 
+        // checks if the user is in the system when the log in button is clicked
         loginButton.addActionListener(e ->{
+            // if the user is in the system show them their profile
             if(validateUsername(usernameInput.getText())){
                 cardLayout.show(root, "User View");
             }else{
+                // show the user that they weren't found
                 usernameInput.setText("");
                 usernameNotFoundLabel.setVisible(true);
             }
         });
 
-
+        // button is in the create account screen
+        // check if the user has entered valid information
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
                 createAccount();
