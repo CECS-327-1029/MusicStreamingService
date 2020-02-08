@@ -243,6 +243,7 @@ public class UserProfile {
         listOfSearchItemsModel.removeAllElements();
         numberOfItemsLabel.setText("");
         numberOfItemsLabel.setVisible(false);
+        mainFrame.setTitle("");
     }
 }
 

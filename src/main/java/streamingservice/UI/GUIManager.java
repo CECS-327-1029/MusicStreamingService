@@ -14,6 +14,7 @@ public class GUIManager {
     private static final int FRAME_WIDTH = 1200;
     private static final int FRAME_HEIGHT = 600;
 
+    // names of the cards
     public static final String LOG_IN = "Log In Card";
     public static final String CREATE_ACCOUNT = "create Account Card";
     public static final String USER_PROFILE = "User Profile Card";
@@ -25,7 +26,6 @@ public class GUIManager {
         // layout that will be used to switch between the log-in, create account, and user profile screens
         CardLayout screenTransitionCardLayout = new CardLayout();
 
-        mainFrame = new JFrame();
         UserProfile userProfile = new UserProfile(mainFrame, screenTransitionCardLayout, rootPanel);
         JPanel logInPanel = new LogIn(screenTransitionCardLayout, rootPanel, userProfile).getLogInPanel();
         JPanel createAccountPanel = new CreateAccount(screenTransitionCardLayout, rootPanel, userProfile).getCreateAccountPanel();
@@ -36,7 +36,7 @@ public class GUIManager {
         rootPanel.add(createAccountPanel, CREATE_ACCOUNT);
         rootPanel.add(userProfilePanel, USER_PROFILE);
         // the first screen that will be displayed is the log in form
-        screenTransitionCardLayout.show(rootPanel, USER_PROFILE);
+        screenTransitionCardLayout.show(rootPanel, LOG_IN);
 
         // sets up the frame that will display our screens
         mainFrame.add(rootPanel);

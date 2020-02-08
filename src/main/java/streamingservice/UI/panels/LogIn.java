@@ -24,6 +24,8 @@ public class LogIn {
             // if the user is in the system show them their profile
             User user = FileHandler.getUser(usernameInput.getText());
             if(user != null) {
+                usernameInput.setText("");
+                usernameNotFoundLabel.setVisible(false);
                 userProfile.setUser(user);  // allows to get the user's information in the user profile screen
                 screenTransitionCardLayout.show(rootPanel, GUIManager.USER_PROFILE);
             }else{

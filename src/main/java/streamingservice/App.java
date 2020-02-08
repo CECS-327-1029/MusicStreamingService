@@ -1,15 +1,14 @@
 package streamingservice;
 
 
-import javazoom.jl.decoder.JavaLayerException;
-import streamingservice.UI.MainUI;
+import streamingservice.UI.GUIManager;
 
-import java.io.IOException;
+import javax.swing.*;
 
 public class App {
 
-    public static void main(String[] args) throws IOException, JavaLayerException {
-        MainUI mainUI = new MainUI();
+    public static void main(String[] args) {
+        new GUIManager();
 
     }
 
