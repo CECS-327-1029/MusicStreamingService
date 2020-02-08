@@ -1,6 +1,8 @@
 package streamingservice.music.songinfo;
 
-public class Artist {
+import java.util.Objects;
+
+public class Artist implements Comparable<Artist> {
 
     private double terms_freq;
     private String terms;
@@ -67,6 +69,26 @@ public class Artist {
 
     public double getHotttnesss() {
         return hotttnesss;
+    }
+
+    @Override
+    public int compareTo(Artist o) {
+        return this.getName().compareTo(o.getName());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Artist artist = (Artist) o;
+        System.out.println(this.name + ": " + this.id);
+        System.out.println("++++++++++++++++");
+        return id.equals(artist.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(terms_freq, terms, name, familiarity, longitude, id, location, latitude, similar, hotttnesss);
     }
 
     @Override

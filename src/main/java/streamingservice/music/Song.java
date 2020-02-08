@@ -3,7 +3,7 @@ package streamingservice.music;
 import streamingservice.music.songinfo.Artist;
 import streamingservice.music.songinfo.Release;
 
-public class Song {
+public class Song implements Comparable<Song> {
 
     private Release release;
     private Artist artist;
@@ -24,6 +24,11 @@ public class Song {
     public streamingservice.music.songinfo.Song getSong() { return song; }
 
     @Override
+    public int compareTo(Song o) {
+        return this.getSong().getTitle().compareTo(o.getSong().getTitle());
+    }
+
+    @Override
     public String toString() {
         return "SongUnit{" +
                 "\nrelease=" + release +
@@ -31,4 +36,5 @@ public class Song {
                 ",\nsong=" + song +
                 "\n}";
     }
+
 }
