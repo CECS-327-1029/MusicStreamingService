@@ -22,12 +22,13 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.userName = userName;
+        this.numberOfPlaylists = 0;
     }
 
     public User(String firstName, String lastName, String email, String userName, List<Playlist> playlists) {
         this(firstName, lastName, email, userName);
         this.playlists = playlists;
-        numberOfPlaylists = playlists.size();
+        this.numberOfPlaylists = playlists.size();
     }
 
     public UUID getId() { return id; }
@@ -42,6 +43,7 @@ public class User {
 
     public List<Playlist> getPlaylists() { return playlists; }
 
+
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
         this.numberOfPlaylists = playlists.size();
@@ -51,6 +53,7 @@ public class User {
         playlists.add(playlist);
         numberOfPlaylists++;
     }
+
 
     @Override
     public String toString() {

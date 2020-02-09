@@ -80,6 +80,30 @@ public class FileHandler {
         return wasUserAdded;
     }
 
+
+    /**************************************************************************************/
+    public static boolean updateUserPlaylist(User updateUser){
+        User user = null;
+        boolean wasUserUpdated = false;
+
+        Gson gson = new Gson();
+        try{
+            Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH));
+            List<User> allUsers = gson.fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            reader.close();
+
+            user = allUsers.get(isNameInSystemIdx(updateUser.getUserName()));
+            user.setPlaylists(updateUser.getPlaylists());
+
+            Writer writer = Files.newBufferedWriter(Paths.get(USER_FILE_PATH));
+            gson.toJson(allUsers, writer);
+            writer.close();
+            wasUserUpdated = true;
+
+        }catch(IOException e) {e.getMessage(); }
+        return wasUserUpdated;
+    }
+
     /**
      * First, the function determines if the user is in the user.json file. If so, then retrieve that user
      * from the file based on its index given from the function <code>isNameInSystemIdx</code>.
