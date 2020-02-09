@@ -36,7 +36,11 @@ public class LogIn {
         });
 
         // moves the user to the screen where they will create an account
-        createAccountBtn.addActionListener(e -> screenTransitionCardLayout.show(rootPanel, GUIManager.CREATE_ACCOUNT));
+        createAccountBtn.addActionListener(e -> {
+            usernameInput.setText("");
+            usernameNotFoundLabel.setVisible(false);
+            screenTransitionCardLayout.show(rootPanel, GUIManager.CREATE_ACCOUNT);
+        });
     }
 
     public JPanel getLogInPanel() { return logInPanel; }

@@ -9,7 +9,7 @@ import streamingservice.music.songinfo.Artist;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;import java.awt.event.MouseAdapter;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -58,7 +58,6 @@ public class UserProfile {
     private JPanel playlistDisplayPanel;        // panel that holds widgets that will display all user's playlists
     private JList<String> listOfPlaylists;         // holds a list of a user's playlist names
     private DefaultListModel<String> playlistListModel; // list model to hold the jlist of playlists
-    private ArrayList<Playlist> playlistsToDisplay;  //holds all the playlists of the user
 
     // panel that contains button to manage a song
     private JPanel musicPlayerPanel;
@@ -77,7 +76,6 @@ public class UserProfile {
 
         artistsRespectiveSongs = new TreeMap<>();       // will hold all artists and their corresponding songs
         songsToDisplay = new ArrayList<>();             // hold the list songs that were found when searched
-        playlistsToDisplay = new ArrayList<>();         //hold the list of playlists
 
         // sets search to have values to search by
         searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
@@ -99,32 +97,22 @@ public class UserProfile {
         songListScrollPane.setPreferredSize(dimension);
         songListDisplayPanel.add(songListScrollPane);
 
-
-        /*****************************************************************************************************************************/
-        /*****************************************************************************************************************************/
         playlistListModel = new DefaultListModel<>();
         listOfPlaylists = new JList<>(playlistListModel);
         listOfPlaylists.setSelectionBackground(Color.RED);
         listOfPlaylists.setFont(new Font("Ayuthaya", Font.PLAIN, 16));
         listOfPlaylists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+        // allows us to scroll through the display of the user's playlists
+        // set the size of the scrollpane to prevent resizing when songs title are very long
+        JScrollPane playlistListScrollPane = new JScrollPane(listOfPlaylists);
+        playlistListScrollPane.setMaximumSize(dimension);
+        playlistListScrollPane.setMinimumSize(dimension);
+        playlistListScrollPane.setPreferredSize(dimension);
+        playlistDisplayPanel.add(playlistListScrollPane);
 
-
-        showPlaylistsBtn.addActionListener(e ->{
-            /*
-            JScrollPane playlistListScrollPane = new JScrollPane(listOfPlaylists);
-            Dimension ddimension = new Dimension(200, 200);
-            playlistListScrollPane.setMaximumSize(ddimension);
-            playlistListScrollPane.setMinimumSize(ddimension);
-            playlistListScrollPane.setPreferredSize(ddimension);
-            playlistDisplayPanel.add(playlistListScrollPane);
-             */
-
-            displayUserPlayLists(); // display the playlists of the user
-        });
-        /*****************************************************************************************************************************/
-        /*****************************************************************************************************************************/
-
+        // display the playlists of the user
+        showPlaylistsBtn.addActionListener(e -> displayUserPlayLists());
 
         // will search by the option given in the searchFiler combo box
         searchButton.addActionListener(e -> {
@@ -202,8 +190,6 @@ public class UserProfile {
             screenTransitionCardLayout.show(rootPanel, GUIManager.LOG_IN);
         });
 
-        /*******************************************************************************************************************/
-        /*******************************************************************************************************************/
         //when a user clicks on the add button, the user creates a new playlist in their profile
         addPlaylistButton.addActionListener(e -> {
             //pop up menu prompts the user to insert a name for the new playlist created
@@ -212,19 +198,19 @@ public class UserProfile {
             //if statement will check if the user insert a name for the playlist or if the new playlist was canceled
             //if the user provides a name for the new playlist, a playlist called playlistName will be saved
             if(playlistName != null){
-                //creates a new playlist named playlistName
-                Playlist newPlayList = new Playlist(playlistName);
+                if (!playlistName.trim().equals("")) {
+                    //creates a new playlist named playlistName
+                    Playlist newPlayList = new Playlist(playlistName);
 
-                //the new playlist is added to the user
-                user.addPlaylist(newPlayList);
-                FileHandler.updateUserPlaylist(user);
+                    //the new playlist is added to the user
+                    user.addPlaylist(newPlayList);
+                    FileHandler.updateUserPlaylist(user);
 
-                /****UPDATE DISPLAY PANEL*/
-                displayUserPlayLists();
+                    /****UPDATE DISPLAY PANEL*/
+                    displayUserPlayLists();
+                }
             }
         } );
-        /*******************************************************************************************************************/
-        /*******************************************************************************************************************/
     }
 
     public JPanel getUserProfilePanel() { return userProfilePanel; }
@@ -270,17 +256,11 @@ public class UserProfile {
         listOfSearchedItems.setModel(listOfSearchItemsModel);
     }
 
-    /*******************************************************************************************************************/
-    /*******************************************************************************************************************/
     private void displayUserPlayLists(){
         playlistListModel.clear();
-        playlistsToDisplay.forEach(playlist -> playlistListModel.addElement(playlist.getPlaylistName()));
+        user.getPlaylists().forEach(playlist -> playlistListModel.addElement(playlist.getPlaylistName()));
         listOfPlaylists.setModel(playlistListModel);
     }
-
-    /*******************************************************************************************************************/
-    /*******************************************************************************************************************/
-
 
     /**
      * Will display the artists found to the user by adding them to the Jlist that is used to display the artists.
