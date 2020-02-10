@@ -18,6 +18,7 @@ import java.util.*;
 public class FileHandler {
 
     // set the path to files containing all user and song information
+    private static final String IMPERIAL_SONG_PATH = "resources" + System.getProperty("file.separator") + "imperial.mp3";
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
 
@@ -213,5 +214,14 @@ public class FileHandler {
         return userIndex;
     }
 
+    /**
+     * This method wil find the path of the song in the system.
+     * But for testing purposes, only use the imperial sound
+     * @param song a <Code>Song</Code> object
+     * @return the relative path of the song
+     */
+    public static String  getSongPath(Song song) {
+        return IMPERIAL_SONG_PATH;
+    }
 
 }

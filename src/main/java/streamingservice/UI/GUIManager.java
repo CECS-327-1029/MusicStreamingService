@@ -26,7 +26,7 @@ public class GUIManager {
         // layout that will be used to switch between the log-in, create account, and user profile screens
         CardLayout screenTransitionCardLayout = new CardLayout();
 
-        UserProfile userProfile = new UserProfile(mainFrame, screenTransitionCardLayout, rootPanel);
+        UserProfile userProfile = new UserProfile(mainFrame);
         JPanel logInPanel = new LogIn(screenTransitionCardLayout, rootPanel, userProfile).getLogInPanel();
         JPanel createAccountPanel = new CreateAccount(screenTransitionCardLayout, rootPanel, userProfile).getCreateAccountPanel();
         JPanel userProfilePanel = userProfile.getUserProfilePanel();
