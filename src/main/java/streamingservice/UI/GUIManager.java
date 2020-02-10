@@ -45,7 +45,7 @@ public class GUIManager {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
-        //mainFrame.setResizable(false);
+        mainFrame.setResizable(false);
     }
 
 

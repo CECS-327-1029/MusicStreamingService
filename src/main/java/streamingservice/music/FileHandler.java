@@ -80,8 +80,6 @@ public class FileHandler {
         return wasUserAdded;
     }
 
-
-    /**************************************************************************************/
     public static boolean updateUserPlaylist(User updateUser){
         User user = null;
         boolean wasUserUpdated = false;
