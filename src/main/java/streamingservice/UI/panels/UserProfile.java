@@ -75,6 +75,8 @@ public class UserProfile {
 
     /*********************************************************/
     private boolean lookingAtPlaylistList;
+    private int songToRemoveIndex;
+    private int playListUserisIn;
 
     // reference to the frame the user profile is int
     JFrame mainFrame;
@@ -129,7 +131,6 @@ public class UserProfile {
         });
 
 
-
         // will search by the option given in the searchFiler combo box
         searchButton.addActionListener(e -> {
             if (searchingBy != null) {  // textField not empty
@@ -163,14 +164,22 @@ public class UserProfile {
 
         //show songs of playlists
         listOfPlaylists.addMouseListener(new MouseAdapter(){
+
             @Override
             public void mouseClicked(MouseEvent e){
+
+                if(lookingAtPlaylistList){
+                    playListUserisIn = ((JList) e.getSource()).locationToIndex(e.getPoint());
+                }
 
                 //popup menu to remove song from playlist
                 if(SwingUtilities.isRightMouseButton(e) && !listOfPlaylists.isSelectionEmpty()
                         && lookingAtPlaylistList == false
                         && listOfPlaylists.locationToIndex(e.getPoint()) == listOfPlaylists.getSelectedIndex()){
                     songToRemovePopupMenu.show(listOfPlaylists,e.getX(),e.getY());
+
+                    //saves the index of the song to remove
+                    songToRemoveIndex = ((JList) e.getSource()).locationToIndex(e.getPoint());
                 }
 
                 int index = ((JList) e.getSource()).locationToIndex(e.getPoint());
@@ -199,14 +208,20 @@ public class UserProfile {
             }
         });
 
-
         removeFromPlaylistOption.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                //TODO:remove song
+
+                //removes the song that the user clicks on from the playlist
+                user.getPlaylists().get(playListUserisIn).getSongs().remove(songToRemoveIndex - 1);
+                //updates the user json file
+                FileHandler.updateUserPlaylist(user);
+
+                //updates the model
+                displayUserPlayLists();
+                lookingAtPlaylistList = true;
             }
         });
-
 
         //popup menu to add song to playlist
         final JPopupMenu songPopupMenu = new JPopupMenu();
