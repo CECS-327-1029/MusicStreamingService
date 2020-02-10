@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeMap;
 
 public class UserProfile {
@@ -22,6 +23,10 @@ public class UserProfile {
     private static final String SONGS = "Songs";
     private static final String ARTISTS = "Artists";
     private static final String GO_BACK_SYMBOL = "...";
+
+    // help determine from which four of these places a song is selected to be played
+    enum PLAY_SONG_AS {SINGLE_SONG, ARTIST_SONG, PLAYLIST_SONG, CURRENTLY_PLAYING_SONG};
+    private PLAY_SONG_AS playSongAs;
 
     // values that will be used as search options besides the first element
     private static final String[] SEARCH_FILTERS = {SONGS, ARTISTS};
@@ -79,7 +84,7 @@ public class UserProfile {
     private JList<String> currentlyPlayingList;               // holds a list of currently playing songs
     private DefaultListModel<String> currentlyPlayingModel;   // list model to hold the jlist of currently playing songs
     private ArrayList<Song> currentlyPlayingSongs = new ArrayList<>();
-
+    private int currentlyPlayingSongIndex = -1;             // the index of the song within the currently playing songs list
 
     private boolean lookingAtPlaylistList;      // determines if the user is looking at a playlist
     private int songToRemoveIndex;              // index of the song that will be removed from a playlist
@@ -230,7 +235,9 @@ public class UserProfile {
                     }
                     //play the song that the user clicks
                     else if (!lookingAtPlaylistList && index > 0){
-                        try { playSongWhenSelected();
+                        try {
+                            playSongAs = PLAY_SONG_AS.PLAYLIST_SONG;
+                            playSongWhenSelected();
                         } catch (IOException | JavaLayerException ignored) { }
                     }
                     else if(lookingAtPlaylistList){
@@ -241,6 +248,23 @@ public class UserProfile {
                         listOfPlaylists.setModel(playlistListModel);
                         lookingAtPlaylistList = false;
                     }
+                }
+            }
+        });
+
+        // play the song that was double clicked in the currently playing panel
+        currentlyPlayingList.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if (e.getClickCount() == 2) {   // captures a mouse double-click
+
+                    int index = ((JList) e.getSource()).locationToIndex(e.getPoint());
+
+                    currentlyPlayingList.setSelectedIndex(index);
+                    try {
+                        playSongAs = PLAY_SONG_AS.CURRENTLY_PLAYING_SONG;
+                        playSongWhenSelected();
+                    } catch (IOException | JavaLayerException ignored) {}
                 }
             }
         });
@@ -270,6 +294,12 @@ public class UserProfile {
             currentlyPlayingList.setModel(currentlyPlayingModel);
             currentlyPlayingList.setSelectedIndex(0);
             // start playing the first song
+            if (currentlyPlayingSongs.size() >= 1) {
+                try {
+                    playSongAs = PLAY_SONG_AS.CURRENTLY_PLAYING_SONG;
+                    playSongWhenSelected();
+                } catch (IOException | JavaLayerException ignored) { }
+            }
         });
 
         addPlaylistToCurrentlyPlaying.addActionListener(actionEvent -> {
@@ -278,6 +308,13 @@ public class UserProfile {
             currentlyPlayingSongs.forEach(song -> currentlyPlayingModel.addElement(song.getSong().getTitle()));
             currentlyPlayingList.setModel(currentlyPlayingModel);
             currentlyPlayingList.setSelectedIndex(0);
+            if (currentlyPlayingSongIndex == -1) {
+                try {
+                    playSongAs = PLAY_SONG_AS.CURRENTLY_PLAYING_SONG;
+                    playSongWhenSelected();
+                } catch (IOException | JavaLayerException ignored) {
+                }
+            }
         });
 
         addToPlaylistOption.addActionListener(actionEvent -> {
@@ -317,6 +354,12 @@ public class UserProfile {
             currentlyPlayingModel.addElement(songClicked.getSong().getTitle());
             currentlyPlayingList.setModel(currentlyPlayingModel);
             currentlyPlayingList.setSelectedIndex(0);
+            if (currentlyPlayingSongIndex == -1) {
+                try {
+                    playSongAs = PLAY_SONG_AS.CURRENTLY_PLAYING_SONG;
+                    playSongWhenSelected();
+                } catch (IOException | JavaLayerException ignored) { }
+            }
         });
 
         //when a user clicks on the remove button, the user will decide which playlist to remove from their profile
@@ -324,18 +367,20 @@ public class UserProfile {
             //gets the name of the playlist to delete
             String playlist = showPlaylistList();
 
-            //saves the index of the playlist to remove
-            int indexToRemove = user.getIndexOfPlaylist(playlist);
+            if (playlist != null) {
+                //saves the index of the playlist to remove
+                int indexToRemove = user.getIndexOfPlaylist(playlist);
 
-            //if the playlist is found then the playlist will be deleted from the user
-            if(indexToRemove != -1){
-                user.removePlaylist(indexToRemove);
-                //updates the user profile
-                FileHandler.updateUserPlaylist(user);
+                //if the playlist is found then the playlist will be deleted from the user
+                if (indexToRemove != -1) {
+                    user.removePlaylist(indexToRemove);
+                    //updates the user profile
+                    FileHandler.updateUserPlaylist(user);
+                }
+
+                //updates the model
+                displayUserPlayLists();
             }
-
-            //updates the model
-            displayUserPlayLists();
             lookingAtPlaylistList = true;
         });
 
@@ -355,7 +400,9 @@ public class UserProfile {
                 if (e.getClickCount() == 2) {   // captures a mouse double-click
 
                     if (searchingBy.equals(SONGS)) {
-                        try { playSongWhenSelected();
+                        try {
+                            playSongAs = PLAY_SONG_AS.SINGLE_SONG;
+                            playSongWhenSelected();
                         } catch (IOException | JavaLayerException ignored) { }
                     } else {
                         // occurs when a user clicks on an artist or an artist's song
@@ -376,7 +423,9 @@ public class UserProfile {
                         }
                         // if a user double clicks on an artist's song, play the song
                         else if (!showingArtists && index > 0) {
-                            try { playSongWhenSelected();
+                            try {
+                                playSongAs = PLAY_SONG_AS.ARTIST_SONG;
+                                playSongWhenSelected();
                             } catch (IOException | JavaLayerException ignored) { }
                         } else if (showingArtists) {    // display the name of songs by artistSelected
                             showingArtists = false; // set false to show that we'll display and artist's songs
@@ -407,9 +456,65 @@ public class UserProfile {
             try { playSongWhenSelected();
             } catch (IOException | JavaLayerException ignored) { }
         });
-        stopButton.addActionListener(e-> MP.stop());        // stops the player
+
+        stopButton.addActionListener(e-> {
+                MP.stop();
+                mainFrame.setTitle("");
+        });        // stops the player
+
         resume.addActionListener(e -> MP.resume());         // resumes the player if it's paused
+
         pauseButton.addActionListener(e -> MP.pause());     // pauses the player if it's playing
+
+        previousButton.addActionListener(e -> {
+            if (currentlyPlayingSongIndex != -1 &&  0 <= currentlyPlayingSongIndex-1 && currentlyPlayingSongIndex-1 < currentlyPlayingSongs.size()) {
+                Song song = currentlyPlayingSongs.get(currentlyPlayingSongIndex - 1);
+                try {
+                    MP.play(song);
+                    mainFrame.setTitle(song.getSong().getTitle() + " by " +
+                                       song.getArtist().getName() + " from " +
+                                       song.getRelease().getName());
+                    currentlyPlayingList.setSelectedIndex((currentlyPlayingSongIndex--) - 1);
+                } catch (IOException | JavaLayerException ignored) { }
+            }
+        });
+
+        nextButton.addActionListener(e -> {
+            if (currentlyPlayingSongIndex != -1 && currentlyPlayingSongIndex+1 < currentlyPlayingSongs.size()) {
+                Song song = currentlyPlayingSongs.get(currentlyPlayingSongIndex + 1);
+                try {
+                    MP.play(song);
+                    mainFrame.setTitle(song.getSong().getTitle() + " by " +
+                            song.getArtist().getName() + " from " +
+                            song.getRelease().getName());
+                    currentlyPlayingList.setSelectedIndex((currentlyPlayingSongIndex++) + 1);
+                } catch (IOException | JavaLayerException ignored) { }
+            }
+        });
+
+        repeatButton.addActionListener(e -> {
+            if (currentlyPlayingSongIndex != -1) {
+                Song song = currentlyPlayingSongs.get(currentlyPlayingSongIndex);
+                try {
+                    MP.play(song);
+                } catch (IOException | JavaLayerException ignored) {}
+            }
+        });
+
+        shuffleButton.addActionListener(e -> {
+            if (currentlyPlayingModel.size() > 0) {//playSongAs == PLAY_SONG_AS.CURRENTLY_PLAYING_SONG) {
+                currentlyPlayingModel.clear();
+                Song song = currentlyPlayingSongs.remove(currentlyPlayingSongIndex);
+                Collections.shuffle(currentlyPlayingSongs);
+                currentlyPlayingSongs.add(0, song);
+                currentlyPlayingSongs.forEach(song1 -> currentlyPlayingModel.addElement(song1.getSong().getTitle()));
+                currentlyPlayingList.setModel(currentlyPlayingModel);
+                currentlyPlayingSongIndex = 0;
+                currentlyPlayingList.setSelectedIndex(0);
+            }
+
+        });
+
     }
 
     private void showPlaylistsPanel(){
@@ -448,26 +553,53 @@ public class UserProfile {
      */
     private void playSongWhenSelected() throws IOException, JavaLayerException {
         Song songChosen = null;
-        // if searching by "Songs" and a song is selected get the song
-        if (listOfSearchedItems.getSelectedIndex() != -1 && searchingBy.equals(SONGS)) {
-            songChosen = songsToDisplay.get(listOfSearchedItems.getSelectedIndex());
-        }
 
-        // if searching by "Artists" and a song is selected, and we are viewing a list of an artist's songs, get the song
-        if (listOfSearchedItems.getSelectedIndex() > 0 && !showingArtists && searchingBy.equals(ARTISTS)) {
-            songChosen = artistsRespectiveSongs.get(artistSelected).get(listOfSearchedItems.getSelectedIndex() - 1);
-        }
-
-        // play song from the currently playing list
-        if (listOfPlaylists.getSelectedIndex() > 0 && !lookingAtPlaylistList) {
-            songChosen = user.getPlaylists().get(playListUserIsIn).getSongs().get(listOfPlaylists.getSelectedIndex() - 1);
+        switch (playSongAs) {
+            case SINGLE_SONG:
+                // if searching by "Songs" and a song is selected get the song
+                if (listOfSearchedItems.getSelectedIndex() != -1 && searchingBy.equals(SONGS)) {
+                    songChosen = songsToDisplay.get(listOfSearchedItems.getSelectedIndex());
+                    currentlyPlayingSongs.add(0, songChosen);
+                    currentlyPlayingModel.clear();
+                    currentlyPlayingSongs.forEach(song -> currentlyPlayingModel.addElement(song.getSong().getTitle()));
+                    currentlyPlayingList.setModel(currentlyPlayingModel);
+                    currentlyPlayingList.setSelectedIndex(0);
+                    currentlyPlayingSongIndex = 0;
+                }
+                break;
+            case ARTIST_SONG:
+                // if searching by "Artists" and a song is selected, and we are viewing a list of an artist's songs, get the song
+                if (listOfSearchedItems.getSelectedIndex() > 0 && !showingArtists && searchingBy.equals(ARTISTS)) {
+                    songChosen = artistsRespectiveSongs.get(artistSelected).get(listOfSearchedItems.getSelectedIndex() - 1);
+                    currentlyPlayingSongs.add(0, songChosen);
+                    currentlyPlayingModel.clear();
+                    currentlyPlayingSongs.forEach(song -> currentlyPlayingModel.addElement(song.getSong().getTitle()));
+                    currentlyPlayingList.setModel(currentlyPlayingModel);
+                    currentlyPlayingList.setSelectedIndex(0);
+                    currentlyPlayingSongIndex = 0;
+                }
+                break;
+            case PLAYLIST_SONG:
+                // play song from the currently playing list
+                if (listOfPlaylists.getSelectedIndex() > 0 && !lookingAtPlaylistList) {
+                    songChosen = user.getPlaylists().get(playListUserIsIn).getSongs().get(listOfPlaylists.getSelectedIndex() - 1);
+                    currentlyPlayingSongIndex = listOfPlaylists.getSelectedIndex();
+                }
+                break;
+            case CURRENTLY_PLAYING_SONG:
+                if (currentlyPlayingList.getSelectedIndex() != -1) {
+                    songChosen = currentlyPlayingSongs.get(currentlyPlayingList.getSelectedIndex());
+                    currentlyPlayingSongIndex = currentlyPlayingList.getSelectedIndex();
+                }
+                break;
+            default:
+                break;
         }
 
         if (songChosen != null) {  // if a song is chosen, display the song on the top of the window
             String title = songChosen.getSong().getTitle();
             String album = songChosen.getRelease().getName();
             String artist = songChosen.getArtist().getName();
-
             mainFrame.setTitle(title + " by " + album + " from " + artist);
             MP.play(songChosen);
         }
@@ -487,8 +619,6 @@ public class UserProfile {
             playlistListModel.clear();
             user.getPlaylists().forEach(playlist -> playlistListModel.addElement(playlist.getPlaylistName()));
             listOfPlaylists.setModel(playlistListModel);
-        } else {
-
         }
     }
 
@@ -508,6 +638,7 @@ public class UserProfile {
         frame.setAlwaysOnTop(true);
 
         Object[] options = new Object[user.getPlaylists().size()];
+        if (options.length == 0) return null;
 
         for(int i = 0; i < user.getPlaylists().size(); i++){
             options[i] = user.getPlaylists().get(i).getPlaylistName();

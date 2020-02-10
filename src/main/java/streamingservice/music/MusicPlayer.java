@@ -79,7 +79,6 @@ public class MusicPlayer {
                 // will make the thread wait while the music is paused
                 while (playerMode == PLAYER_MODE.PAUSED) {
                     try {
-                        System.out.println("HERE");
                         lock.wait();
                     } catch (InterruptedException e) {
                         break;
