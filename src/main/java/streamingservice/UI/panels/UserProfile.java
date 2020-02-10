@@ -1,6 +1,7 @@
 package streamingservice.UI.panels;
 
 import streamingservice.UI.GUIManager;
+import streamingservice.UI.MusicPlayer;
 import streamingservice.music.FileHandler;
 import streamingservice.music.Playlist;
 import streamingservice.music.Song;
@@ -13,11 +14,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class UserProfile {
 
+    MusicPlayer MP = new MusicPlayer();
     private static final String SONGS = "Songs";
     private static final String ARTISTS = "Artists";
     private static final String GO_BACK_SYMBOL = "...";
@@ -71,6 +74,9 @@ public class UserProfile {
     private JButton shuffleButton;
     private JButton showPlaylistsBtn;
     private JButton removePlaylistBtn;
+    private JButton stopButton;
+    private JButton resume;
+    private JButton pauseButton;
 
     private boolean lookingAtPlaylistList;      // determines if the user is looking at a playlist
     private int songToRemoveIndex;              // index of the song that will be removed from a playlist
@@ -336,6 +342,31 @@ public class UserProfile {
             showPlaylistsPanel();
         } );
 
+        stopButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                MP.stop();
+            }
+        });
+        resume.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                MP.resume();
+            }
+        });
+        pauseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                try {
+                    MP.pause();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
     }
 
     /************************************************************************************************/
@@ -377,6 +408,7 @@ public class UserProfile {
      */
     private void playSongWhenSelected() {
         Song songChosen = null;
+        MP.play("C:\\Data\\Fourth Year\\Spring 2020\\CECS 327\\Music Project Test\\resources\\imperial.mp3");
         // if searching by "Songs" and a song is selected get the song
         if (listOfSearchedItems.getSelectedIndex() != -1 && searchingBy.equals(SONGS)) {
             songChosen = songsToDisplay.get(listOfSearchedItems.getSelectedIndex());

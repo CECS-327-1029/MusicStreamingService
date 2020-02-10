@@ -150,6 +150,39 @@
           <hspacer id="5e823">
             <constraints/>
           </hspacer>
+          <component id="9b60c" class="javax.swing.JButton" binding="resume">
+            <constraints/>
+            <properties>
+              <font name="Ayuthaya" size="14"/>
+              <foreground color="-16777216"/>
+              <text value="RESUME"/>
+            </properties>
+          </component>
+          <hspacer id="9db61">
+            <constraints/>
+          </hspacer>
+          <component id="74c8e" class="javax.swing.JButton" binding="pauseButton">
+            <constraints/>
+            <properties>
+              <font name="Ayuthaya" size="14"/>
+              <foreground color="-16777216"/>
+              <text value="PAUSE"/>
+            </properties>
+          </component>
+          <hspacer id="9c801">
+            <constraints/>
+          </hspacer>
+          <component id="549a3" class="javax.swing.JButton" binding="stopButton">
+            <constraints/>
+            <properties>
+              <font name="Ayuthaya" size="14"/>
+              <foreground color="-16777216"/>
+              <text value="STOP"/>
+            </properties>
+          </component>
+          <hspacer id="df3c5">
+            <constraints/>
+          </hspacer>
           <component id="f427f" class="javax.swing.JButton" binding="nextButton">
             <constraints/>
             <properties>
