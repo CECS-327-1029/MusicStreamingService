@@ -7,12 +7,15 @@ import streamingservice.music.Song;
 import streamingservice.music.User;
 import streamingservice.music.songinfo.Artist;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -23,15 +26,14 @@ public class UserProfile {
     private static final String GO_BACK_SYMBOL = "...";
 
     // values that will be used as search options besides the first element
-    private static final String[] SEARCH_FILTERS = {"--- Search by ---", SONGS, ARTISTS};
+    private static final String[] SEARCH_FILTERS = {SONGS, ARTISTS};
 
-    private String searchingBy; // keeps track of what is being searched
+    private String searchingBy = SONGS; // keeps track of what is being searched
 
     private User user;      // tells what user is logged in
     private ArrayList<Song> songsToDisplay;  // holds all searched for songs that will be displayed to the user
     // HashMap to contains an searched artist and a list of their respective songs
     private TreeMap<Artist, ArrayList<Song>> artistsRespectiveSongs;
-
 
     // the user profile panel that holds the widgets to simulate a user's profile
     private JPanel userProfilePanel;
@@ -74,10 +76,10 @@ public class UserProfile {
 
     private boolean lookingAtPlaylistList;      // determines if the user is looking at a playlist
     private int songToRemoveIndex;              // index of the song that will be removed from a playlist
-    private int playListUserisIn;               // determines which playlist the user is in
+    private int playListUserIsIn;               // determines which playlist the user is in
 
     // reference to the frame the user profile is int
-    JFrame mainFrame;
+    private JFrame mainFrame;
 
     public UserProfile(JFrame mainFrame, CardLayout screenTransitionCardLayout, JPanel rootPanel) {
         this.mainFrame = mainFrame;
@@ -86,16 +88,17 @@ public class UserProfile {
         songsToDisplay = new ArrayList<>();             // hold the list songs that were found when searched
 
         // sets search to have values to search by
+        searchTF.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
         searchFilter.addItemListener(e -> searchingBy = e.getItem().toString());
 
         lookingAtPlaylistList = true;
-
+        Font font = new Font("Ayuthaya", Font.PLAIN, 18);
         // following allows for viewing the songs found
         listOfSearchItemsModel = new DefaultListModel<>();
         listOfSearchedItems = new JList<>(listOfSearchItemsModel);
-        listOfSearchedItems.setSelectionBackground(Color.RED);
-        listOfSearchedItems.setFont(new Font("Ayuthaya", Font.PLAIN, 16));
+        listOfSearchedItems.setSelectionBackground(Color.decode("#F4D00C"));
+        listOfSearchedItems.setFont(font);
         listOfSearchedItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // allows us to scroll through the display of songs
@@ -105,12 +108,13 @@ public class UserProfile {
         songListScrollPane.setMaximumSize(dimension);
         songListScrollPane.setMinimumSize(dimension);
         songListScrollPane.setPreferredSize(dimension);
+        songListScrollPane.setBackground(Color.decode("#0752CB"));
         songListDisplayPanel.add(songListScrollPane);
 
         playlistListModel = new DefaultListModel<>();
         listOfPlaylists = new JList<>(playlistListModel);
-        listOfPlaylists.setSelectionBackground(Color.RED);
-        listOfPlaylists.setFont(new Font("Ayuthaya", Font.PLAIN, 16));
+        listOfPlaylists.setSelectionBackground(Color.decode("#F4D00C"));
+        listOfPlaylists.setFont(font);
         listOfPlaylists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // allows us to scroll through the display of the user's playlists
@@ -161,7 +165,7 @@ public class UserProfile {
             public void mouseClicked(MouseEvent e){
 
                 if(lookingAtPlaylistList){
-                    playListUserisIn = ((JList) e.getSource()).locationToIndex(e.getPoint());
+                    playListUserIsIn = ((JList) e.getSource()).locationToIndex(e.getPoint());
                 }
 
                 //popup menu to remove song from playlist
@@ -205,7 +209,7 @@ public class UserProfile {
             public void actionPerformed(ActionEvent actionEvent) {
 
                 //removes the song that the user clicks on from the playlist
-                user.getPlaylists().get(playListUserisIn).getSongs().remove(songToRemoveIndex - 1);
+                user.getPlaylists().get(playListUserIsIn).getSongs().remove(songToRemoveIndex - 1);
                 //updates the user json file
                 FileHandler.updateUserPlaylist(user);
 
@@ -338,9 +342,6 @@ public class UserProfile {
 
     }
 
-    /************************************************************************************************/
-    /************************************************************************************************/
-
     private void showPlaylistsPanel(){
         //pop up menu prompts the user to insert a name for the new playlist created
         String playlistName = JOptionPane.showInputDialog(getUserProfilePanel(), "Name of Playlist", null);
@@ -407,9 +408,13 @@ public class UserProfile {
     }
 
     private void displayUserPlayLists(){
-        playlistListModel.clear();
-        user.getPlaylists().forEach(playlist -> playlistListModel.addElement(playlist.getPlaylistName()));
-        listOfPlaylists.setModel(playlistListModel);
+        if (user.getPlaylists() != null) {
+            playlistListModel.clear();
+            user.getPlaylists().forEach(playlist -> playlistListModel.addElement(playlist.getPlaylistName()));
+            listOfPlaylists.setModel(playlistListModel);
+        } else {
+
+        }
     }
 
     /**
