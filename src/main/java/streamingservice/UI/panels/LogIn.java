@@ -19,6 +19,8 @@ public class LogIn {
     private JLabel usernameNotFoundLabel;   // label that tells the user that their input/username was not found
 
     public LogIn(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile) {
+        usernameInput.addActionListener(e -> loginButton.doClick());
+
         // checks if the user is in the system when the log in button is clicked
         loginButton.addActionListener(e ->{
             // if the user is in the system show them their profile
