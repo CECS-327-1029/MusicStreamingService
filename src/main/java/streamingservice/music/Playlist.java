@@ -35,7 +35,7 @@ public class Playlist {
         return true;
     }
 
-    public int getSize() { return size; }
+    public int getSize() { return songs.size(); }
 
     public ArrayList<Song> getSongs() {
         return songs;

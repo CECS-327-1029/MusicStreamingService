@@ -44,6 +44,18 @@ public class User {
     public List<Playlist> getPlaylists() { return playlists; }
 
 
+    //returns the index of the playlist in arraylist playlists
+    public int getIndexOfPlaylist(String playlistName){
+        int returnIndex = -1;
+
+        for(int i = 0; i < playlists.size(); i++){
+            if(playlists.get(i).getPlaylistName().equals(playlistName)){
+                returnIndex = i;
+            }
+        }
+        return returnIndex;
+    }
+
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
         this.numberOfPlaylists = playlists.size();
@@ -53,6 +65,12 @@ public class User {
         playlists.add(playlist);
         numberOfPlaylists++;
     }
+
+    public void removePlaylist(int index){
+        playlists.remove(index);
+        numberOfPlaylists--;
+    }
+
 
 
     @Override

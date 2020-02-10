@@ -9,6 +9,8 @@ import streamingservice.music.songinfo.Artist;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public class UserProfile {
     private ArrayList<Song> songsToDisplay;  // holds all searched for songs that will be displayed to the user
     // HashMap to contains an searched artist and a list of their respective songs
     private TreeMap<Artist, ArrayList<Song>> artistsRespectiveSongs;
+
+
 
     // the user profile panel that holds the widgets to simulate a user's profile
     private JPanel userProfilePanel;
@@ -67,6 +71,10 @@ public class UserProfile {
     private JButton nextButton;
     private JButton shuffleButton;
     private JButton showPlaylistsBtn;
+    private JButton removePlaylistBtn;
+
+    /*********************************************************/
+    private boolean lookingAtPlaylistList;
 
     // reference to the frame the user profile is int
     JFrame mainFrame;
@@ -80,6 +88,9 @@ public class UserProfile {
         // sets search to have values to search by
         searchFilter.setModel(new DefaultComboBoxModel<>(SEARCH_FILTERS));
         searchFilter.addItemListener(e -> searchingBy = e.getItem().toString());
+
+        /*********************************************************/
+        lookingAtPlaylistList = true;
 
         // following allows for viewing the songs found
         listOfSearchItemsModel = new DefaultListModel<>();
@@ -112,7 +123,12 @@ public class UserProfile {
         playlistDisplayPanel.add(playlistListScrollPane);
 
         // display the playlists of the user
-        showPlaylistsBtn.addActionListener(e -> displayUserPlayLists());
+        showPlaylistsBtn.addActionListener(e -> {
+            displayUserPlayLists();
+            lookingAtPlaylistList = true;
+        });
+
+
 
         // will search by the option given in the searchFiler combo box
         searchButton.addActionListener(e -> {
@@ -134,11 +150,135 @@ public class UserProfile {
             }
         });
 
+
+        /************************************************************************************************/
+        /************************************************************************************************/
+
+
+        //popup menu to remove song from a playlist
+        final JPopupMenu songToRemovePopupMenu = new JPopupMenu();
+        JMenuItem removeFromPlaylistOption = new JMenuItem("Remove from playlist");
+        songToRemovePopupMenu.add(removeFromPlaylistOption);
+
+
+        //show songs of playlists
+        listOfPlaylists.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+
+                //popup menu to remove song from playlist
+                if(SwingUtilities.isRightMouseButton(e) && !listOfPlaylists.isSelectionEmpty()
+                        && lookingAtPlaylistList == false
+                        && listOfPlaylists.locationToIndex(e.getPoint()) == listOfPlaylists.getSelectedIndex()){
+                    songToRemovePopupMenu.show(listOfPlaylists,e.getX(),e.getY());
+                }
+
+                int index = ((JList) e.getSource()).locationToIndex(e.getPoint());
+
+                //user double clicks on a playlist
+                if(e.getClickCount() == 2){
+                    //clicking on the dots to go back
+                    if(!lookingAtPlaylistList && index == 0){
+                        lookingAtPlaylistList = true;
+                        playlistListModel.clear();
+                        displayUserPlayLists();
+                    }
+                    //play the song that the user clicks
+                    else if(!lookingAtPlaylistList && index > 0){
+                        //TODO: PLAYS SONG
+                    }
+                    else if(lookingAtPlaylistList){
+                        //displays the songs of the playlist
+                        playlistListModel.clear();
+                        playlistListModel.addElement(GO_BACK_SYMBOL);
+                        user.getPlaylists().get(index).getSongs().forEach(song -> playlistListModel.addElement(song.getSong().getTitle()));
+                        listOfPlaylists.setModel(playlistListModel);
+                        lookingAtPlaylistList = false;
+                    }
+                }
+            }
+        });
+
+
+        removeFromPlaylistOption.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                //TODO:remove song
+            }
+        });
+
+
+        //popup menu to add song to playlist
+        final JPopupMenu songPopupMenu = new JPopupMenu();
+        JMenuItem addToPlaylistOption = new JMenuItem("Add to playlist");
+        songPopupMenu.add(addToPlaylistOption);
+
+        addToPlaylistOption.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                //gets the name of the playlist to add
+                String playlist = showPlaylistList();
+
+                //gets the song to add to playlist
+                Song songClicked = songsToDisplay.get(listOfSearchedItems.getSelectedIndex());
+
+                //saves the index of the playlist to add song to
+                int indexToAdd = user.getIndexOfPlaylist(playlist);
+
+                //if the playlist is found then the song will be added to the playlist
+                if(indexToAdd != -1){
+                    user.getPlaylists().get(indexToAdd).addSong(songClicked);
+                    //updates the user profile
+                    FileHandler.updateUserPlaylist(user);
+                }
+
+                //updates the model
+                displayUserPlayLists();
+                lookingAtPlaylistList = true;
+            }
+        });
+
+        //when a user clicks on the remove button, the user will decide which playlist to remove from their profile
+        removePlaylistBtn.addActionListener(e ->{
+            //gets the name of the playlist to delete
+            String playlist = showPlaylistList();
+
+            //saves the index of the playlist to remove
+            int indexToRemove = user.getIndexOfPlaylist(playlist);
+
+            //if the playlist is found then the playlist will be deleted from the user
+            if(indexToRemove != -1){
+                user.removePlaylist(indexToRemove);
+                //updates the user profile
+                FileHandler.updateUserPlaylist(user);
+            }
+
+            //updates the model
+            displayUserPlayLists();
+            lookingAtPlaylistList = true;
+        });
+
+        /************************************************************************************************/
+        /************************************************************************************************/
+
         // if an item from the card that shows the list of songs search was double clicked,
         // then the song should begin playing
         listOfSearchedItems.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
+                /************************************************************************************************/
+                /************************************************************************************************/
+                //popup menu to song to playlist
+                if(SwingUtilities.isRightMouseButton(e) && !listOfSearchedItems.isSelectionEmpty()
+                        && showingArtists == false
+                        && listOfSearchedItems.locationToIndex(e.getPoint()) == listOfSearchedItems.getSelectedIndex()){
+                    songPopupMenu.show(listOfSearchedItems,e.getX(),e.getY());
+
+                }
+                /************************************************************************************************/
+                /************************************************************************************************/
+
                 if (e.getClickCount() == 2) {   // captures a mouse double-click
 
                     if (searchingBy.equals(SONGS)) {
@@ -192,26 +332,38 @@ public class UserProfile {
 
         //when a user clicks on the add button, the user creates a new playlist in their profile
         addPlaylistButton.addActionListener(e -> {
-            //pop up menu prompts the user to insert a name for the new playlist created
-            String playlistName = JOptionPane.showInputDialog(getUserProfilePanel(), "Name of Playlist", null);
-
-            //if statement will check if the user insert a name for the playlist or if the new playlist was canceled
-            //if the user provides a name for the new playlist, a playlist called playlistName will be saved
-            if(playlistName != null){
-                if (!playlistName.trim().equals("")) {
-                    //creates a new playlist named playlistName
-                    Playlist newPlayList = new Playlist(playlistName);
-
-                    //the new playlist is added to the user
-                    user.addPlaylist(newPlayList);
-                    FileHandler.updateUserPlaylist(user);
-
-                    /****UPDATE DISPLAY PANEL*/
-                    displayUserPlayLists();
-                }
-            }
+            showPlaylistsPanel();
         } );
+
     }
+
+    /************************************************************************************************/
+    /************************************************************************************************/
+
+    private void showPlaylistsPanel(){
+        //pop up menu prompts the user to insert a name for the new playlist created
+        String playlistName = JOptionPane.showInputDialog(getUserProfilePanel(), "Name of Playlist", null);
+
+        //if statement will check if the user insert a name for the playlist or if the new playlist was canceled
+        //if the user provides a name for the new playlist, a playlist called playlistName will be saved
+        if(playlistName != null){
+            if (!playlistName.trim().equals("")) {
+                //creates a new playlist named playlistName
+                Playlist newPlayList = new Playlist(playlistName);
+
+                //the new playlist is added to the user
+                user.addPlaylist(newPlayList);
+                FileHandler.updateUserPlaylist(user);
+
+                //updates the model
+                displayUserPlayLists();
+                lookingAtPlaylistList = true;
+            }
+        }
+    }
+    /************************************************************************************************/
+    /************************************************************************************************/
+
 
     public JPanel getUserProfilePanel() { return userProfilePanel; }
 
@@ -293,35 +445,26 @@ public class UserProfile {
         mainFrame.setTitle("");
     }
 
-    /************************************************/
-    private boolean checksToSeeIfUserHasPlaylist(User u){
-        boolean hasPlaylist = false;
-        if(u.getPlaylists() != null){
-            System.out.println("IN HERE: ");
-        }else{
-            System.out.println("IN HERE: " );//+ user.getPlaylistSize());
+
+    /************************************************************************************************/
+    /************************************************************************************************/
+    private String showPlaylistList(){
+
+        JFrame frame = new JFrame();
+        frame.setAlwaysOnTop(true);
+
+        Object[] options = new Object[user.getPlaylists().size()];
+
+        for(int i = 0; i < user.getPlaylists().size(); i++){
+            options[i] = user.getPlaylists().get(i).getPlaylistName();
         }
 
-        return hasPlaylist;
+        //passing `frame` instead of `null` as first parameter
+        Object selectionObject = JOptionPane.showInputDialog(frame, "Choose playlist", "Menu", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+        String selectionString = selectionObject.toString();
+        return selectionString;
     }
+
+    /************************************************************************************************/
+    /************************************************************************************************/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
