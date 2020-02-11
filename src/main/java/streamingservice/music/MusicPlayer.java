@@ -17,16 +17,8 @@ public class MusicPlayer {
 
     private Player player;
 
-    private boolean hasFinished = false;
-
     // helps lock the thread that plays the music
     private final Object lock = new Object();
-
-    private JButton next;
-
-    public MusicPlayer(JButton next) {
-        this.next = next;
-    }
 
     // sets the player mode to STOPPED which in turn stops the music
     public void stop() {
@@ -96,11 +88,6 @@ public class MusicPlayer {
                 }
             }
         }
-        hasFinished = true;
-        next.doClick();
-        System.out.println(hasFinished);
     }
-
-    private boolean isSongDone() { return hasFinished; }
 
 }

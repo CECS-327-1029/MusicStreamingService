@@ -91,7 +91,7 @@ public class UserProfile {
     // reference to the frame the user profile is int
     private JFrame mainFrame;
 
-    private MusicPlayer MP = new MusicPlayer(nextButton);
+    private MusicPlayer MP = new MusicPlayer();
 
     private JList<String> lastSelectedList;
 
