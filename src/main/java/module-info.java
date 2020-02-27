@@ -4,5 +4,5 @@ module streamingservice {
     requires javazoom;
     requires com.google.gson;
     requires java.desktop;
-    exports streamingservice;
+    exports streamingservice.clientside;
 }
