@@ -11,8 +11,8 @@ import java.awt.*;
 public class GUIManager {
 
     // set the width of the Jframe window
-    private static final int FRAME_WIDTH = 1200;
-    private static final int FRAME_HEIGHT = 600;
+    private static final int FRAME_WIDTH = 1215;
+    private static final int FRAME_HEIGHT = 650;
 
     // names of the cards
     public static final String LOG_IN = "Log In Card";

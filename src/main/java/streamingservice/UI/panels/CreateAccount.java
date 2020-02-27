@@ -2,7 +2,6 @@ package streamingservice.UI.panels;
 
 import streamingservice.UI.GUIManager;
 import streamingservice.music.FileHandler;
-import streamingservice.music.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,16 +32,14 @@ public class CreateAccount {
     private JButton submitButton;      // review the information given and create an account for the user
     private JButton logInButton;
 
-    // new user that was created
-    private User newUser;
 
     public CreateAccount(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile) {
         // check if the user has entered the necessary and valid information
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {
-                boolean wasCreated = createAccount();    // write their information to the users.json file
-                if (wasCreated) {
-                    userProfile.setUser(newUser);   // allows to get the user's information in the user profile screen
+                String id;
+                if ((id = createAccount()) != null) {  // write their information to the users.json file
+                    userProfile.setUser(id);   // allows to get the user's information in the user profile screen
                     clearAll();         // clear the fields before leaving screen
                     screenTransitionCardLayout.show(rootPanel, GUIManager.USER_PROFILE); // go to user's profile
                 }
@@ -62,18 +59,10 @@ public class CreateAccount {
     public JPanel getCreateAccountPanel() { return createAccountPanel; }
 
     /**
-     * Returns the user that was created when user submits valid information. Make sure to return when
-     * the user enters their profile.
-     * @return a <code>User</code> object or null if the submit button wasn't clicked on
-     */
-    public User getNewUser() { return newUser; }
-
-    /**
      * Creates an account based on the information given in the form.
      */
-    private boolean createAccount() {
-        newUser = new User(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
-        return FileHandler.addUserToSystem(newUser);
+    private String createAccount() {
+        return FileHandler.addUserToSystem(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
     }
 
     /**

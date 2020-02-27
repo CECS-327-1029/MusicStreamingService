@@ -1,1 +1,45 @@
-[{"id":"0d594f25-bc0e-46f1-8462-9769dc16e971","firstName":"Emma","lastName":"Jones","email":"emma.jones@gmail.com","userName":"EMMA24","playlists":[{"id":"520cd1ea-16be-44bf-84ba-a79423e8c08b","playlistName":"ABC","size":0,"songs":[]},{"id":"fed7b25e-262b-4882-b0be-3f10e638ec8f","playlistName":"YEAH","size":0,"songs":[]}],"numberOfPlaylists":2},{"id":"8b271ffa-acc7-4658-a3ef-649fa1b82569","firstName":"Jorge","lastName":"Villa","email":"12","userName":"Jorge2","playlists":[{"id":"2a2d9a28-773c-4c6c-97ef-8c7e3d6d4dea","playlistName":"First","size":0,"songs":[]}],"numberOfPlaylists":1}]
+[
+  {
+    "id": "2f490d74-65a3-423a-80a3-30faa16032be",
+    "firstName": "emma",
+    "lastName": "jones",
+    "email": "o",
+    "userName": "emma",
+    "playlists": [
+      {
+        "id": "c760090d-1d9c-41ee-8bde-cf1c024f04e4",
+        "playlistName": "playlist",
+        "size": 1,
+        "songs": [
+          {
+            "value0": "SOJMOHG12A8C141AA7",
+            "value1": "Easy Life (Live)"
+          }
+        ]
+      }
+    ],
+    "queuedSongs": [
+      {
+        "value0": "SOVYOMR12AC468ABB9",
+        "value1": "Little Timmy"
+      },
+      {
+        "value0": "SOFWOXM12A67ADEA89",
+        "value1": "Beauty Queen (12\" Spoon Club Mix)"
+      },
+      {
+        "value0": "SOMHQKT12A6D4FAE5D",
+        "value1": "Hard To Laugh"
+      },
+      {
+        "value0": "SOCJPJT12AB017EAA7",
+        "value1": "RebuliASSo"
+      },
+      {
+        "value0": "SOQOFLM12AB01865FA",
+        "value1": "Watch Out for The Birdsongs"
+      }
+    ],
+    "numberOfPlaylists": 1
+  }
+]

@@ -2,7 +2,6 @@ package streamingservice.UI.panels;
 
 import streamingservice.UI.GUIManager;
 import streamingservice.music.FileHandler;
-import streamingservice.music.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,11 +23,11 @@ public class LogIn {
         // checks if the user is in the system when the log in button is clicked
         loginButton.addActionListener(e ->{
             // if the user is in the system show them their profile
-            User user = FileHandler.getUser(usernameInput.getText());
-            if(user != null) {
+            String userId = FileHandler.getUserNameOrID(usernameInput.getText(), false);
+            if(!userId.equals("")) {
                 usernameInput.setText("");
                 usernameNotFoundLabel.setVisible(false);
-                userProfile.setUser(user);  // allows to get the user's information in the user profile screen
+                userProfile.setUser(userId);  // allows to get the user's information in the user profile screen
                 screenTransitionCardLayout.show(rootPanel, GUIManager.USER_PROFILE);
             }else{
                 // show the user that they weren't found
