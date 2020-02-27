@@ -1,4 +1,4 @@
-package streamingservice.music.songinfo;
+package streamingservice.serverside.songinfo;
 
 import java.util.Objects;
 
@@ -81,8 +81,6 @@ public class Artist implements Comparable<Artist> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Artist artist = (Artist) o;
-        System.out.println(this.name + ": " + this.id);
-        System.out.println("++++++++++++++++");
         return id.equals(artist.id);
     }
 
@@ -97,13 +95,7 @@ public class Artist implements Comparable<Artist> {
                 "terms_freq=" + terms_freq +
                 ", terms='" + terms + '\'' +
                 ", name='" + name + '\'' +
-                ", familiarity=" + familiarity +
-                ", longitude=" + longitude +
                 ", id='" + id + '\'' +
-                ", location='" + location + '\'' +
-                ", latitude=" + latitude +
-                ", similar='" + similar + '\'' +
-                ", hotttnesss=" + hotttnesss +
                 '}';
     }
 

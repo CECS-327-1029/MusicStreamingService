@@ -1,6 +1,6 @@
-package streamingservice.music;
+package streamingservice.serverside;
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -9,7 +9,7 @@ public class Playlist {
     private UUID id;
     private String playlistName;
     private int size;
-    private ArrayList<Song> songs;
+    private ArrayList<Tuple2<String, String>> songs;
 
     // If this is uncommented, the following exception is raised
     // Exception in thread "AWT-EventQueue-0" java.lang.reflect.InaccessibleObjectException:
@@ -29,15 +29,19 @@ public class Playlist {
         this.playlistName = playlistName;
     }
 
-    public boolean addSong(Song song) {
+    public void addSong(Tuple2<String, String> song) {
         songs.add(song);
         size++;
-        return true;
+    }
+
+    public void removeSong(int index) {
+        songs.remove(index);
+        size--;
     }
 
     public int getSize() { return songs.size(); }
 
-    public ArrayList<Song> getSongs() {
+    public ArrayList<Tuple2<String, String>> getSongs() {
         return songs;
     }
 

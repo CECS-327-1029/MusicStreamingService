@@ -1,9 +1,9 @@
-package streamingservice.UI;
+package streamingservice.clientside;
 
 
-import streamingservice.UI.panels.CreateAccount;
-import streamingservice.UI.panels.LogIn;
-import streamingservice.UI.panels.UserProfile;
+import streamingservice.clientside.panels.CreateAccount;
+import streamingservice.clientside.panels.LogIn;
+import streamingservice.clientside.panels.UserProfile;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package streamingservice.music.songinfo;
+package streamingservice.serverside.songinfo;
 
 public class Song {
 
@@ -107,29 +107,8 @@ public class Song {
     @Override
     public String toString() {
         return "Song{" +
-                "key=" + key +
-                ", mode_confidence=" + mode_confidence +
-                ", artist_mbtags_count=" + artist_mbtags_count +
-                ", key_confidence=" + key_confidence +
-                ", tatums_start=" + tatums_start +
-                ", year=" + year +
-                ", duration=" + duration +
-                ", hotttnesss=" + hotttnesss +
-                ", beats_start=" + beats_start +
-                ", time_signature_confidence=" + time_signature_confidence +
                 ", title='" + title + '\'' +
                 ", bars_confidence=" + bars_confidence +
-                ", id='" + id + '\'' +
-                ", bars_start=" + bars_start +
-                ", artist_mbtags='" + artist_mbtags + '\'' +
-                ", start_of_fade_out=" + start_of_fade_out +
-                ", tempo=" + tempo +
-                ", end_of_fade_in=" + end_of_fade_in +
-                ", beats_confidence=" + beats_confidence +
-                ", tatums_confidence=" + tatums_confidence +
-                ", mode=" + mode +
-                ", time_signature=" + time_signature +
-                ", loudness=" + loudness +
                 '}';
     }
 }

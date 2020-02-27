@@ -1,4 +1,4 @@
-package streamingservice.music;
+package streamingservice.serverside;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,8 @@ public class User {
     private String email;
     private String userName;
     private List<Playlist> playlists = new ArrayList<>();
+    private ArrayList<Tuple2<String, String>> queuedSongs = new ArrayList<>();
+
     private int numberOfPlaylists;
 
     public User() {}
@@ -43,6 +45,11 @@ public class User {
 
     public List<Playlist> getPlaylists() { return playlists; }
 
+    public int getNumberOfPlaylists() { return numberOfPlaylists; }
+
+    public ArrayList<Tuple2<String, String>> getQueuedSongs() {
+        return queuedSongs;
+    }
 
     //returns the index of the playlist in arraylist playlists
     public int getIndexOfPlaylist(String playlistName){
@@ -71,7 +78,7 @@ public class User {
         numberOfPlaylists--;
     }
 
-
+    public void addSongsToQueue(Tuple2<String, String> song) { queuedSongs.add(song); }
 
     @Override
     public String toString() {

@@ -1,4 +1,4 @@
-package streamingservice.UI.panels;
+package streamingservice.clientside.panels;
 
 import java.util.Arrays;
 

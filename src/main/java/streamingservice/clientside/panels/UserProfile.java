@@ -1,8 +1,8 @@
-package streamingservice.UI.panels;
+package streamingservice.clientside.panels;
 
-import streamingservice.music.MusicPlayerMaster;
-import streamingservice.music.Tuple2;
-import streamingservice.music.FileHandler;
+import streamingservice.serverside.MusicPlayerMaster;
+import streamingservice.serverside.Tuple2;
+import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
 import java.awt.*;

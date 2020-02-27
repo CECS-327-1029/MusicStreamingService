@@ -1,11 +1,9 @@
-package streamingservice.music;
+package streamingservice.serverside;
 
 import java.io.*;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
-
-import javax.swing.*;
 
 public class MusicPlayer {
 
@@ -37,7 +35,7 @@ public class MusicPlayer {
         }
     }
 
-    public void play(Song song) throws IOException, JavaLayerException {
+    public void play(Tuple2<String, String> song) throws IOException, JavaLayerException {
         if (player != null) {
             stop();
             player.close();

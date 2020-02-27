@@ -1,13 +1,13 @@
-package streamingservice.UI;
+package streamingservice.clientside;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import streamingservice.music.Song;
-import streamingservice.music.User;
-import streamingservice.music.songinfo.Artist;
+import streamingservice.serverside.Song;
+import streamingservice.serverside.User;
+import streamingservice.serverside.songinfo.Artist;
 
 import javax.swing.*;
 import java.awt.*;

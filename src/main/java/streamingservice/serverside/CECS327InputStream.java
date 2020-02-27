@@ -7,7 +7,7 @@
 * @since   2019-01-24 
 */
 
-package streamingservice.music;
+package streamingservice.serverside;
 
 import java.io.File;
 import java.io.FileInputStream;

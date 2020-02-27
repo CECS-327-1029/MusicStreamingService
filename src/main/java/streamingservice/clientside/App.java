@@ -1,9 +1,7 @@
-package streamingservice;
+package streamingservice.clientside;
 
 
-import streamingservice.UI.GUIManager;
-
-import javax.swing.*;
+import streamingservice.clientside.GUIManager;
 
 public class App {
 

@@ -1,4 +1,4 @@
-package streamingservice.music.songinfo;
+package streamingservice.serverside.songinfo;
 
 public class Release {
 

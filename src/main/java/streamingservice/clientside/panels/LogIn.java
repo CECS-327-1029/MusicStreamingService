@@ -1,7 +1,7 @@
-package streamingservice.UI.panels;
+package streamingservice.clientside.panels;
 
-import streamingservice.UI.GUIManager;
-import streamingservice.music.FileHandler;
+import streamingservice.clientside.GUIManager;
+import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
 import java.awt.*;
