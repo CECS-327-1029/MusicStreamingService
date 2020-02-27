@@ -25,9 +25,6 @@ public class MainUI {
     private static final int FRAME_WIDTH = 900;
     private static final int FRAME_HEIGHT = 600;
 
-    // set the path to play the song
-    private static final String SONG_TO_PLAY = "resources" + System.getProperty("file.separator") + "imperial.mp3";
-
     // set the path to files containing all user and song information
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";

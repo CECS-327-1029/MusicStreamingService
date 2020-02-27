@@ -16,7 +16,7 @@ public class FileHandler {
 
     // set the path to files containing all user and song information
     private static final String MP3_DIRECTORY_PATH = "resources" + System.getProperty("file.separator") + "mp3s" + System.getProperty("file.separator");
-    private static final String IMPERIAL_SONG_PATH = MP3_DIRECTORY_PATH + "imperial.mp3";
+    private static final String IMPERIAL_SONG_PATH = MP3_DIRECTORY_PATH + "490183.mp3";
     private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
     private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
     private static final String QUEUE_FILE_PATH = "resources" + System.getProperty("file.separator") + "queue.json";
