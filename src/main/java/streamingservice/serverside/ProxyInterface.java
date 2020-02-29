@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 
 public class ProxyInterface {
 
-    JsonObject synchExecution(String remoteMethod, Object... param)
+    public JsonObject synchExecution(String remoteMethod, Object... param)
     {
-        for (String arg : args)
+        for (Object arg : param)
         {
             System.out.println(arg);
         }

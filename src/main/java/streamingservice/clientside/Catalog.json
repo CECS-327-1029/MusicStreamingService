@@ -1,0 +1,250 @@
+[
+  {
+    "remoteMethod": "isNameInSystem",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userName": "String"
+    }
+  },
+  {
+    "remoteMethod": "isUserNameFreeToUse",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userName": "String"
+    }
+  },
+  {
+    "remoteMethod": "isEmailFreeToUse",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "email": "String"
+    }
+  },
+  {
+    "remoteMethod": "addUserToSystem",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "first": "String",
+      "last": "String",
+      "email": "String",
+      "userName": "String"
+    }
+  },
+  {
+    "remoteMethod": "getUserPlaylists",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "id": "String"
+    }
+  },
+  {
+    "remoteMethod": "getPlaylistSongs",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userId": "String",
+      "playlistId": "String"
+    }
+  },
+  {
+    "remoteMethod": "updateUserPlaylists",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userId": "String",
+      "playlistId": "String",
+      "songId": "String",
+      "songName": "String",
+      "shouldAdd": "String"
+    }
+  },
+  {
+    "remoteMethod": "createPlaylist",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userId": "String",
+      "newPlaylistName": "String"
+    }
+  },
+  {
+    "remoteMethod": "deletePlaylist",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userId": "String",
+      "newPlaylistName": "String"
+    }
+  },
+  {
+    "remoteMethod": "isSongInPlaylist",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param":
+    {
+      "userId": "String",
+      "playlistId": "String",
+      "songId": "String"
+    }
+  },
+  {
+    "remoteMethod": "getUserNameOrID",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "keyword": "String",
+      "shouldGetUserName": "boolean"
+    }
+  },
+  {
+    "remoteMethod": "userHasPlaylists",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "id": "String"
+    }
+  },
+  {
+    "remoteMethod": "getListOf",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "filter": "SEARCH_FILTER",
+      "keyword": "String",
+      "searchByID": "boolean",
+      "idFilter": "SEARCH_FILTER"
+    }
+  },
+  {
+    "remoteMethod": "addSongToQueue",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "userId": "String",
+      "song": "Tuple2<String, String>",
+      "addLast": "boolean"
+    }
+  },
+  {
+    "remoteMethod": "getQueuedSongs",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "userId": "String"
+    }
+  },
+  {
+    "remoteMethod": "getQueuedSongs",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "userId": "String"
+    }
+  },
+  {
+    "remoteMethod": "clearQueue",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "userId": "String"
+    }
+  },
+  {
+    "remoteMethod": "adjustQueue",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "userId": "String",
+      "index": "int",
+      "removeOnlyIndex": "boolean"
+    }
+  },
+  {
+    "remoteMethod": "getSongInfo",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "songId": "String"
+    }
+  },
+  {
+    "remoteMethod": "getSongPath",
+    "objectName": "FileHandler",
+    "semantics": "at_least_one",
+    "param": {
+      "song": "Tuple2<String, String>"
+    }
+  },
+  {
+    "remoteMethod": "setQueue",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {
+      "songsInQueue": "ArrayList<Tuple2<String, String>>"
+    }
+  },
+  {
+    "remoteMethod": "play",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {
+      "song": "Tuple2<String, String>"
+    }
+  },
+  {
+    "remoteMethod": "pause",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "resume",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "stop",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "next",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "previous",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "repeat",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  },
+  {
+    "remoteMethod": "shuffle",
+    "objectName": "MusicPlayerMaster",
+    "semantics": "at_least_one",
+    "param": {}
+  }
+]

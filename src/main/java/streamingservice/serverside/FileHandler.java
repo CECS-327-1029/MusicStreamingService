@@ -15,20 +15,21 @@ import java.util.List;
 public class FileHandler {
 
     // set the path to files containing all user and song information
-    private static final String MP3_DIRECTORY_PATH = "resources" + System.getProperty("file.separator") + "mp3s" + System.getProperty("file.separator");
+    // set the path to files containing all user and song information
+    private static final String FS = System.getProperty("file.separator");
+    private static final String MP3_DIRECTORY_PATH = "resources" + FS + "mp3s" + FS;
     private static final String IMPERIAL_SONG_PATH = MP3_DIRECTORY_PATH + "490183.mp3";
-    private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "music.json";
-    private static final String USER_FILE_PATH = "resources" + System.getProperty("file.separator") + "users.json";
-    private static final String QUEUE_FILE_PATH = "resources" + System.getProperty("file.separator") + "queue.json";
+
+    private static final String JSON_FILES_PATH = "src"+FS+"main"+FS+"java"+FS+"streamingservice"+FS+"serverside"+FS;
+    private static final String MUSIC_FILE_PATH = JSON_FILES_PATH+"music.json";
+    private static final String USER_FILE_PATH = JSON_FILES_PATH+"users.json";
 
     private static final String USER_NAME_FIELD = "userName";
     private static final String EMAIL_FIELD = "email";
     private static final String ID_FIELD = "id";
     private static final String EMPTY_FILE_INDICATOR = "[{}]";
-    
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static final MusicPlayer MUSIC_PLAYER = new MusicPlayer();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     /**
      * Looks through the users.json file to check if the given user name is in the system.
@@ -174,18 +175,18 @@ public class FileHandler {
         }catch(IOException ignored){ }
     }
 
-    public static void deletePlaylist(String userId, String newPlaylistName) {
+    public static void deletePlaylist(String userId, String playlistName) {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
             
             List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
 
-            if (doesPlaylistExist(userId, newPlaylistName)) {
+            if (doesPlaylistExist(userId, playlistName)) {
                 User user = allUsers.get(isIdInSystemIdx(userId));
                 List<Playlist> playlists = user.getPlaylists();
                 int j = -1;
                 for (int i = 0; i < playlists.size() && j == -1; i++) {
-                    if (playlists.get(i).getPlaylistName().equals(newPlaylistName)) {
+                    if (playlists.get(i).getPlaylistName().equals(playlistName)) {
                         j = i;
                     }
                 }
@@ -247,7 +248,6 @@ public class FileHandler {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
             List<User> allUsers = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
-
             value = shouldGetUserName ? allUsers.get(index).getUserName() : allUsers.get(index).getId().toString();
         } catch (IOException ignored){ }
 
@@ -262,10 +262,6 @@ public class FileHandler {
             return allUsers.get(index).getNumberOfPlaylists() != 0;
         } catch (IOException ignored) { }
         return false;
-    }
-
-    public static ArrayList<Tuple2<String, String>> getListOf(SEARCH_FILTER filter, String keyword, boolean searchByID) {
-        return getListOf(filter, keyword, searchByID, null);
     }
 
     public static ArrayList<Tuple2<String, String>> getListOf(SEARCH_FILTER filter, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
@@ -289,7 +285,7 @@ public class FileHandler {
         return null;
     }
 
-    public static boolean freeToAdd(List<Tuple2<String, String>> list, Tuple2<String, String> pair) {
+    private static boolean freeToAdd(List<Tuple2<String, String>> list, Tuple2<String, String> pair) {
         boolean isFreeToAdd = true;
         for (int i = 0; i < list.size() && isFreeToAdd; i++) {
             if (list.get(i).getValue0().equals(pair.getValue0())) {
