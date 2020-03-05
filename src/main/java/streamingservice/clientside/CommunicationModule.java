@@ -21,11 +21,8 @@ public class CommunicationModule {
         jsonObject.addProperty("MessageType", "Request");
         jsonObject.addProperty("ReqId", ++req);
         jsonObject.addProperty("UserId", userId);
-        System.out.println("In the client's CommunicationModule.sendMessage method");
-        System.out.println(jsonObject.toString());
         String reply = client.sendMessage(jsonObject.toString());
-        System.out.println("Client received Message");
-        System.out.println(reply);
+
     }
 
     /**method checks to see if message type is reply*/

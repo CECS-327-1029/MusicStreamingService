@@ -1,6 +1,8 @@
 package streamingservice.clientside.panels;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import streamingservice.clientside.CommunicationModule;
 import streamingservice.serverside.MusicPlayerMaster;
 import streamingservice.clientside.ProxyInterface;
@@ -508,9 +510,12 @@ public class UserProfile {
     private void search(SEARCH_FILTER searchBy, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
         if (!keyword.trim().equals("")) {
             if (searchBy == SEARCH_FILTER.SONGS) {
-                JsonObject object = proxy.syncExecution("getListOf", searchBy, keyword, searchByID, idFilter);
+                JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
                 module.sendMessage(object, userId);
-                songs = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
+
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                String json = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
+                songs = new Gson().fromJson(json, new TypeToken<ArrayList<Tuple2<String, String>>>() {}.getType());
                 if (songs != null) {
                     sort(songs, searchBy);
                     displaySongs();
@@ -521,7 +526,8 @@ public class UserProfile {
                     numberOfItemsLabel.setVisible(true);
                 }
             } else {
-                masterSearch = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
+                String json = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
+                masterSearch = new Gson().fromJson(json, new TypeToken<ArrayList<Tuple2<String, String>>>() {}.getType());
                 if (masterSearch != null) {
                     sort(masterSearch, searchBy);
                     displayMasterSearch();

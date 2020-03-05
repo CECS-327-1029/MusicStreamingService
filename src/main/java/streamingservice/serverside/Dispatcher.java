@@ -44,12 +44,9 @@ public class Dispatcher implements DispatcherInterface {
     */
     public String dispatch(String request)
     {
-        System.out.println("In Dispatcher");
         JsonObject jsonReturn = new JsonObject();
         JsonParser parser = new JsonParser();
         JsonObject jsonRequest = parser.parse(request).getAsJsonObject();
-        ListOfObjects.forEach((k, v) -> System.out.println(k + " : " + v));
-        System.out.println("+++++++++++++++++++++++");
         try {
             // Obtains the object pointing to SongServices
             Object object = Class.forName("streamingservice.serverside."+jsonRequest.get("objectName").getAsString()).newInstance();
@@ -63,7 +60,6 @@ public class Dispatcher implements DispatcherInterface {
             }
             if (method == null)
             {
-                System.out.println("METHOD DOES NOT EXIST");
                 jsonReturn.addProperty("error", "Method does not exist");
                 return jsonReturn.toString();
             }
@@ -97,11 +93,9 @@ public class Dispatcher implements DispatcherInterface {
                         parameter[i] = Boolean.parseBoolean(strParam[i]);
                         break;
                 }
-                System.out.println("\t\t\t" + parameter[i]);
             }
             // Prepare the return
             Class returnType = method.getReturnType();
-            System.out.println(returnType.toString());
             String ret = "";
             switch (returnType.getCanonicalName())
                 {

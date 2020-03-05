@@ -264,7 +264,7 @@ public class FileHandler {
         return false;
     }
 
-    public static ArrayList<Tuple2<String, String>> getListOf(String filter, String keyword, boolean searchByID, String idFilter) {
+    public static String getListOf(String filter, String keyword, boolean searchByID, String idFilter) {
         try (Reader reader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH))) {
             List<Song> allSongs = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<Song>>() {}.getType());
             reader.close();
@@ -281,10 +281,8 @@ public class FileHandler {
                     itemsFound.add(searchByID ? song.getValueOf(filter1) : zzyzx);
                 }
             }
-
-            return itemsFound;
-        } catch (IOException ignored) {
-        }
+            return GSON.toJson(itemsFound);
+        } catch (IOException ignored) { }
         return null;
     }
 
