@@ -7,6 +7,10 @@ import streamingservice.clientside.panels.UserProfile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class GUIManager {
 
@@ -19,16 +23,20 @@ public class GUIManager {
     public static final String CREATE_ACCOUNT = "create Account Card";
     public static final String USER_PROFILE = "User Profile Card";
 
-    public GUIManager() {
+    private ProxyInterface proxy = new ProxyInterface();
+    private Client client = new Client();
+    private CommunicationModule module = new CommunicationModule(client);
+
+    public GUIManager() throws SocketException, UnknownHostException {
         JPanel rootPanel = new JPanel();
         // frame to display everything
         JFrame mainFrame = new JFrame();
         // layout that will be used to switch between the log-in, create account, and user profile screens
         CardLayout screenTransitionCardLayout = new CardLayout();
 
-        UserProfile userProfile = new UserProfile(mainFrame);
-        JPanel logInPanel = new LogIn(screenTransitionCardLayout, rootPanel, userProfile).getLogInPanel();
-        JPanel createAccountPanel = new CreateAccount(screenTransitionCardLayout, rootPanel, userProfile).getCreateAccountPanel();
+        UserProfile userProfile = new UserProfile(mainFrame, proxy, module);
+        JPanel logInPanel = new LogIn(screenTransitionCardLayout, rootPanel, userProfile, proxy, module).getLogInPanel();
+        JPanel createAccountPanel = new CreateAccount(screenTransitionCardLayout, rootPanel, userProfile, proxy, module).getCreateAccountPanel();
         JPanel userProfilePanel = userProfile.getUserProfilePanel();
 
         rootPanel.setLayout(screenTransitionCardLayout);
@@ -46,6 +54,8 @@ public class GUIManager {
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
         mainFrame.setResizable(false);
+
+
     }
 
 

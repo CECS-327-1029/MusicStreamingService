@@ -1,5 +1,6 @@
 package streamingservice.clientside;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -8,27 +9,23 @@ import java.util.HashMap;
 
 public class CommunicationModule {
 
-    private JsonObject proxy = new JsonObject();
-    private static int req = -1;
-    private String userID;
+    private int req = -1;
 
-    /**method will get the proxy json in order to add the part that is need to be added in the communication module*/
-    public void setCommunicationModule (JsonObject jsObj, String uID){
-        this.proxy = jsObj;
-        req = req + 1;
-        this.userID = uID;
+    public Client client;
+
+    public CommunicationModule(Client client) {
+        this.client = client;
     }
 
-    /***/
-    public String messageTypeRequest(){
-
-        /**these are the the information that needs to be added in the communication module*/
-        this.proxy.addProperty("MessageType", "Request");
-        this.proxy.addProperty("ReqID", req);
-        this.proxy.addProperty("UserId", userID);
-
-        /**this is what will be sent over to the server side*/
-        return this.proxy.toString();
+    public void sendMessage(JsonObject jsonObject, String userId) {
+        jsonObject.addProperty("MessageType", "Request");
+        jsonObject.addProperty("ReqId", ++req);
+        jsonObject.addProperty("UserId", userId);
+        System.out.println("In the client's CommunicationModule.sendMessage method");
+        System.out.println(jsonObject.toString());
+        String reply = client.sendMessage(jsonObject.toString());
+        System.out.println("Client received Message");
+        System.out.println(reply);
     }
 
     /**method checks to see if message type is reply*/

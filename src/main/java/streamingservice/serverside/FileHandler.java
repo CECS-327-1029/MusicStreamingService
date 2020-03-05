@@ -264,18 +264,21 @@ public class FileHandler {
         return false;
     }
 
-    public static ArrayList<Tuple2<String, String>> getListOf(SEARCH_FILTER filter, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
+    public static ArrayList<Tuple2<String, String>> getListOf(String filter, String keyword, boolean searchByID, String idFilter) {
         try (Reader reader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH))) {
             List<Song> allSongs = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<Song>>() {}.getType());
             reader.close();
             // goes through the list of all songs and gets those songs whose title contains the keyword given
             ArrayList<Tuple2<String, String>> itemsFound = new ArrayList<>();
+            SEARCH_FILTER filter1 = SEARCH_FILTER.fromValue(filter);
+            SEARCH_FILTER idFilter1 = null;
+            if (idFilter != null) { idFilter1 = SEARCH_FILTER.fromValue(idFilter); }
 
             for (Song song : allSongs) {
-                Tuple2<String, String> zzyzx = song.getValueOf(searchByID ? idFilter : filter);
+                Tuple2<String, String> zzyzx = song.getValueOf(searchByID ? idFilter1 : filter1);
                 String value = searchByID ? zzyzx.getValue0() : (zzyzx.getValue1() != null ? zzyzx.getValue1() : zzyzx.getValue0());
                 if (value.toLowerCase().contains(keyword.toLowerCase().trim()) && freeToAdd(itemsFound, zzyzx)) {
-                    itemsFound.add(searchByID ? song.getValueOf(filter) : zzyzx);
+                    itemsFound.add(searchByID ? song.getValueOf(filter1) : zzyzx);
                 }
             }
 

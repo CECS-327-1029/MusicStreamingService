@@ -10,7 +10,7 @@ public class ProxyInterface {
     private static final String FS = System.getProperty("file.separator");
     private static final String CATALOG_FILE = "src"+FS+"main"+FS+"java"+FS+"streamingservice"+FS+"clientside"+FS+"Catalog.json";
 
-    public JsonObject synchExecution(String remoteMethod, Object... args) {
+    public JsonObject syncExecution(String remoteMethod, Object... args) {
         JsonObject json = searchInCatalog(remoteMethod);
         return replaceParams(json, args);
     }

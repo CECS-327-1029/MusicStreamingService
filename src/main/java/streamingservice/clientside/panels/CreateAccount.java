@@ -1,6 +1,9 @@
 package streamingservice.clientside.panels;
 
+import streamingservice.clientside.Client;
+import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
+import streamingservice.clientside.ProxyInterface;
 import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
@@ -32,8 +35,14 @@ public class CreateAccount {
     private JButton submitButton;      // review the information given and create an account for the user
     private JButton logInButton;
 
+    private ProxyInterface proxy;
+    private CommunicationModule module;
 
-    public CreateAccount(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile) {
+    public CreateAccount(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile,
+                         ProxyInterface proxy, CommunicationModule module) {
+        this.proxy = proxy;
+        this.module = module;
+
         // check if the user has entered the necessary and valid information
         submitButton.addActionListener(e -> {
             if (checkIfAllEntriesFilled() && areAllNecessaryEntriesValid()) {

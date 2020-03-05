@@ -7,6 +7,9 @@ import java.net.SocketException;
 
 public class Server extends Thread {
 
+    private Dispatcher dispatcher = new Dispatcher();
+    private CommunicationModule module = new CommunicationModule();
+
     private DatagramSocket socket;  // used to send packets
     private boolean running;
     private byte[] buffer = new byte[256];  // contains the message
@@ -39,6 +42,10 @@ public class Server extends Thread {
                 packet = new DatagramPacket(buffer, buffer.length, address, port);
 
                 String received = new String(packet.getData(), 0, packet.getLength());
+                buffer = module.compute(received).getBytes();
+
+                // this new packet is used to send a message to the client
+                packet = new DatagramPacket(buffer, buffer.length, address, port);
 
                 if (received.equals("end")) {   // client's message is "end"
                     // ends by some error or user termination

@@ -1,5 +1,4 @@
-package streamingservice.serverside;
-/**
+package streamingservice.serverside; /**
 * SongDispatcher is the main responsable for obtaining the songs 
 *
 * @author  Oscar Morales-Ponce
@@ -39,12 +38,6 @@ public class SongDispatcher
         inputStream.skip(fragment * FRAGMENT_SIZE);
         inputStream.read(buf);
         inputStream.close(); 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e)
-        {
-            
-        }
         
         // Encode in base64 so it can be transmitted 
          return Base64.getEncoder().encodeToString(buf);
@@ -61,8 +54,4 @@ public class SongDispatcher
         
         return total;
     }
-    
-    
-    
-    
 }

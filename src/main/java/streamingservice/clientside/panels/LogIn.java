@@ -1,6 +1,9 @@
 package streamingservice.clientside.panels;
 
+import streamingservice.clientside.Client;
+import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
+import streamingservice.clientside.ProxyInterface;
 import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
@@ -17,7 +20,14 @@ public class LogIn {
     private JButton loginButton;            // user clicks this button to be redirected to their profile
     private JLabel usernameNotFoundLabel;   // label that tells the user that their input/username was not found
 
-    public LogIn(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile) {
+    private ProxyInterface proxy;
+    private CommunicationModule module;
+
+    public LogIn(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile,
+                 ProxyInterface proxy, CommunicationModule module) {
+        this.proxy = proxy;
+        this.module = module;
+
         usernameInput.addActionListener(e -> loginButton.doClick());
 
         // checks if the user is in the system when the log in button is clicked

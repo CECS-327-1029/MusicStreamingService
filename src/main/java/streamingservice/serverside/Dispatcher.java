@@ -17,6 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import streamingservice.clientside.panels.SEARCH_FILTER;
 
 
 public class Dispatcher implements DispatcherInterface {
@@ -25,7 +26,7 @@ public class Dispatcher implements DispatcherInterface {
 
     public Dispatcher()
     {
-        ListOfObjects = new HashMap<String, Object>();
+        ListOfObjects = new HashMap<>();
     }
     
     /* 
@@ -43,13 +44,15 @@ public class Dispatcher implements DispatcherInterface {
     */
     public String dispatch(String request)
     {
+        System.out.println("In Dispatcher");
         JsonObject jsonReturn = new JsonObject();
         JsonParser parser = new JsonParser();
         JsonObject jsonRequest = parser.parse(request).getAsJsonObject();
-        
+        ListOfObjects.forEach((k, v) -> System.out.println(k + " : " + v));
+        System.out.println("+++++++++++++++++++++++");
         try {
             // Obtains the object pointing to SongServices
-            Object object = ListOfObjects.get(jsonRequest.get("objectName").getAsString());
+            Object object = Class.forName("streamingservice.serverside."+jsonRequest.get("objectName").getAsString()).newInstance();
             Method[] methods = object.getClass().getMethods();
             Method method = null;
             // Obtains the method
@@ -60,11 +63,13 @@ public class Dispatcher implements DispatcherInterface {
             }
             if (method == null)
             {
+                System.out.println("METHOD DOES NOT EXIST");
                 jsonReturn.addProperty("error", "Method does not exist");
                 return jsonReturn.toString();
             }
             // Prepare the  parameters 
             Class[] types =  method.getParameterTypes();
+
             Object[] parameter = new Object[types.length];
             String[] strParam = new String[types.length];
             JsonObject jsonParam = jsonRequest.get("param").getAsJsonObject();
@@ -73,6 +78,7 @@ public class Dispatcher implements DispatcherInterface {
             {
                 strParam[j++] = entry.getValue().getAsString();
             }
+
             // Prepare parameters
             for (int i=0; i<types.length; i++)
             {
@@ -87,10 +93,15 @@ public class Dispatcher implements DispatcherInterface {
                     case "java.lang.String":
                         parameter[i] = new String(strParam[i]);
                         break;
+                    case "boolean":
+                        parameter[i] = Boolean.parseBoolean(strParam[i]);
+                        break;
                 }
+                System.out.println("\t\t\t" + parameter[i]);
             }
             // Prepare the return
             Class returnType = method.getReturnType();
+            System.out.println(returnType.toString());
             String ret = "";
             switch (returnType.getCanonicalName())
                 {
@@ -106,9 +117,9 @@ public class Dispatcher implements DispatcherInterface {
                 }
                 jsonReturn.addProperty("ret", ret);
    
-        } catch (InvocationTargetException | IllegalAccessException e)
+        } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException | InstantiationException e)
         {
-        //    System.out.println(e);
+            System.out.println(e.getMessage());
             jsonReturn.addProperty("error", "Error on " + jsonRequest.get("objectName").getAsString() + "." + jsonRequest.get("remoteMethod").getAsString());
         }
      
@@ -130,27 +141,27 @@ public class Dispatcher implements DispatcherInterface {
     //////////////////
     /* Just for Testing */
     //////////////////
-    public static void main(String[] args) {
-        // Instance of the Dispatcher
-        Dispatcher dispatcher = new Dispatcher();
-        // Instance of the services that te dispatcher can handle
-        SongDispatcher songDispatcher = new SongDispatcher();
-        
-        dispatcher.registerObject(songDispatcher, "SongServices");  
-    
-        // Testing  the dispatcher function
-        // First we read the request. In the final implementation the jsonRequest
-        // is obtained from the communication module
-        try {
-            String jsonRequest = new String(Files.readAllBytes(Paths.get("./getSongChunk.json")));
-            String ret = dispatcher.dispatch(jsonRequest);
-            System.out.println(ret);
-
-            //System.out.println(jsonRequest);
-        } catch (Exception e)
-        {
-            System.out.println(e);
-        }
-        
-    } 
+//    public static void main(String[] args) {
+//        // Instance of the Dispatcher
+//        Dispatcher dispatcher = new Dispatcher();
+//        // Instance of the services that te dispatcher can handle
+//        SongDispatcher songDispatcher = new SongDispatcher();
+//
+//        dispatcher.registerObject(songDispatcher, "SongServices");
+//
+//        // Testing  the dispatcher function
+//        // First we read the request. In the final implementation the jsonRequest
+//        // is obtained from the communication module
+//        try {
+//            String jsonRequest = new String(Files.readAllBytes(Paths.get("./getSongChunk.json")));
+//            String ret = dispatcher.dispatch(jsonRequest);
+//            System.out.println(ret);
+//
+//            //System.out.println(jsonRequest);
+//        } catch (Exception e)
+//        {
+//            System.out.println(e);
+//        }
+//
+//    }
 }

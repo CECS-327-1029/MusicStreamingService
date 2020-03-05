@@ -1,6 +1,9 @@
 package streamingservice.clientside.panels;
 
+import com.google.gson.JsonObject;
+import streamingservice.clientside.CommunicationModule;
 import streamingservice.serverside.MusicPlayerMaster;
+import streamingservice.clientside.ProxyInterface;
 import streamingservice.serverside.Tuple2;
 import streamingservice.serverside.FileHandler;
 
@@ -19,6 +22,9 @@ public class UserProfile {
     private static final Color SCROLLABLE_BACKGROUND = Color.decode("#0752CB");
     private static final Dimension CURRENTLY_PLAYING_DIMENSION = new Dimension(360, 520);
     private static final Dimension DIMENSION_200 = new Dimension(200, 200);
+
+    private ProxyInterface proxy;
+    private CommunicationModule module;
 
     private String userId = "";
     // keeps track of what is being searched. Initial value is Songs
@@ -115,8 +121,11 @@ public class UserProfile {
     // reference to the frame the user profile is int
     private JFrame mainFrame;
 
-    public UserProfile(JFrame mainFrame) {
+    public UserProfile(JFrame mainFrame, ProxyInterface proxy, CommunicationModule module) {
         this.mainFrame = mainFrame;
+        this.proxy = proxy;
+        this.module = module;
+
         songs = new ArrayList<>();
         masterSearch = new ArrayList<>();
         playlists = new ArrayList<>();
@@ -411,7 +420,7 @@ public class UserProfile {
                 songs.get(chosenSongIndex) : songs.get(chosenSongIndex - 1);
 
         FileHandler.addSongToQueue(userId, song, true);
-        displayCurrentlyPlayingSongs(true);
+        displayCurrentlyPlayingSongs(songsInQueue.size() == 0);
     }
 
     private void removeFromPlaylistOptionActionListener(ActionEvent actionEvent) {
@@ -499,7 +508,9 @@ public class UserProfile {
     private void search(SEARCH_FILTER searchBy, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
         if (!keyword.trim().equals("")) {
             if (searchBy == SEARCH_FILTER.SONGS) {
-                songs = FileHandler.getListOf(searchBy, keyword, searchByID, idFilter);
+                JsonObject object = proxy.syncExecution("getListOf", searchBy, keyword, searchByID, idFilter);
+                module.sendMessage(object, userId);
+                songs = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
                 if (songs != null) {
                     sort(songs, searchBy);
                     displaySongs();
@@ -510,7 +521,7 @@ public class UserProfile {
                     numberOfItemsLabel.setVisible(true);
                 }
             } else {
-                masterSearch = FileHandler.getListOf(searchBy, keyword, searchByID, idFilter);
+                masterSearch = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
                 if (masterSearch != null) {
                     sort(masterSearch, searchBy);
                     displayMasterSearch();

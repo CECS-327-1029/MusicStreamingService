@@ -32,6 +32,7 @@ public class Client {
             socket.receive(packet); // get the message from server
             // convert message bytes to string
             received = new String(packet.getData(), 0, packet.getLength());
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

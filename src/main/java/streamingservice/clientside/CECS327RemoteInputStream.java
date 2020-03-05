@@ -1,4 +1,4 @@
-package streamingservice.serverside;
+package streamingservice.clientside;
 /**
 * The CECS327RemoteInputStream extends InputStream class. The class implements 
 * markers that are used in AudioInputStream
@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import com.google.gson.JsonObject;
-import java.util.concurrent.Semaphore; 
+import streamingservice.serverside.ProxyInterface;
+
+import java.util.concurrent.Semaphore;
 
 
 public class CECS327RemoteInputStream extends InputStream {
@@ -52,7 +54,7 @@ public class CECS327RemoteInputStream extends InputStream {
     /**
     * Instance of an implementation of proxyInterface
     */
-    protected ProxyInterface proxy;
+    protected streamingservice.serverside.ProxyInterface proxy;
     
     Semaphore sem; 
 
@@ -90,7 +92,7 @@ public class CECS327RemoteInputStream extends InputStream {
         {
             public void run() {
              
-                JsonObject jsonRet = proxy.synchExecution("getSongChunk", fileName, fileName, fragment);
+                JsonObject jsonRet = proxy.synchExecution("getSongChunk", fileName, fragment);
                 String s = jsonRet.get("ret").getAsString();
                 nextBuf = Base64.getDecoder().decode(s);
                 sem.release(); 
