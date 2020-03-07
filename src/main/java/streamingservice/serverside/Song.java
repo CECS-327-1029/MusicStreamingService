@@ -1,5 +1,7 @@
 package streamingservice.serverside;
 
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import streamingservice.clientside.panels.SEARCH_FILTER;
 import streamingservice.serverside.songinfo.Artist;
 import streamingservice.serverside.songinfo.Release;
@@ -24,11 +26,18 @@ public class Song implements Comparable<Song> {
 
     public streamingservice.serverside.songinfo.Song getSong() { return song; }
 
-    public Tuple2<String, String> getValueOf(SEARCH_FILTER filter) {
-        if (filter == SEARCH_FILTER.SONGS) { return new Tuple2<>(song.getId(), song.getTitle()); }
-        if (filter == SEARCH_FILTER.ARTIST) { return new Tuple2<>(artist.getId(), artist.getName()); }
-        if (filter == SEARCH_FILTER.ALBUM) { return new Tuple2<>(Long.toString(release.getId()), release.getName()); }
-        if (filter == SEARCH_FILTER.GENRE) { return new Tuple2<>(artist.getTerms(), null); }
+    public String getID(SEARCH_FILTER filter) {
+        if (filter == SEARCH_FILTER.SONGS) { return song.getId(); }
+        if (filter == SEARCH_FILTER.ARTIST) { return artist.getId(); }
+        if (filter == SEARCH_FILTER.ALBUM) { return Long.toString(release.getId()); }
+        if (filter == SEARCH_FILTER.GENRE) { return artist.getTerms(); }
+        return null;
+    }
+
+    public String getName(SEARCH_FILTER filter) {
+        if (filter == SEARCH_FILTER.SONGS) { return song.getTitle(); }
+        if (filter == SEARCH_FILTER.ARTIST) { return artist.getName(); }
+        if (filter == SEARCH_FILTER.ALBUM) { return release.getName(); }
         return null;
     }
 

@@ -9,7 +9,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class FileHandler {
@@ -29,16 +31,7 @@ public class FileHandler {
     private static final String ID_FIELD = "id";
     private static final String EMPTY_FILE_INDICATOR = "[{}]";
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-    /**
-     * Looks through the users.json file to check if the given user name is in the system.
-     * @param userName the name given by the user
-     * @return true if the user name was found, false if it wasn't found
-     */
-    public static boolean isNameInSystem(String userName) {
-        return isContainedInUsersFile(userName, USER_NAME_FIELD) != -1;
-    }
+    private static final Gson GSON = new Gson();
 
     private static int isNameInSystemIdx(String userName) {
         return isContainedInUsersFile(userName, USER_NAME_FIELD);
@@ -95,7 +88,7 @@ public class FileHandler {
     public static ArrayList<Tuple2<String, String>> getUserPlaylists(String id) {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
             ArrayList<Tuple2<String, String>> playlists = new ArrayList<>();
-            List<User> allUsers = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             int index = isIdInSystemIdx(id);
             if (allUsers.get(index).getNumberOfPlaylists() != 0) {
@@ -112,7 +105,7 @@ public class FileHandler {
     public static ArrayList<Tuple2<String, String>> getPlaylistSongs(String userId, String playlistId) {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
             ArrayList<Tuple2<String, String>> songs = new ArrayList<>();
-            List<User> allUsers = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             int index = isIdInSystemIdx(userId);
             List<Playlist> playlists = allUsers.get(index).getPlaylists();
@@ -232,31 +225,34 @@ public class FileHandler {
         return isContained;
     }
 
-    /**
-     * First, the function determines if the user is in the user.json file. If so, then retrieve that user
-     * from the file based on its index given from the function <code>isNameInSystemIdx</code> or <code>isIDInSystemIdx</code>.
-     * If the user is not found or there was an error opening the file, then return null. If the user is found, then
-     * either retrieve their user name or id depending on the boolean value <code>shouldGetUserName</code>.
-     * @param keyword the user name or id of the user to retrieve
-     * @param shouldGetUserName boolean value that tells if the user name or id of a user should be obtained
-     * @return the user name or id of the user
-     */
-    public static String getUserNameOrID(String keyword, boolean shouldGetUserName) {
-        int index = shouldGetUserName ? isIdInSystemIdx(keyword) : isNameInSystemIdx(keyword);
+    public static String getUserName(String id) {
+        int index = isIdInSystemIdx(id);
         if (index == -1) return "";
         String value = "";
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
-            List<User> allUsers = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
-            value = shouldGetUserName ? allUsers.get(index).getUserName() : allUsers.get(index).getId().toString();
+            value = allUsers.get(index).getUserName();
         } catch (IOException ignored){ }
 
         return value;
     }
 
+    public static String getUserId(String userName) {
+        int index = isNameInSystemIdx(userName);
+        if (index == -1) return "";
+        String id = "";
+        try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            reader.close();
+            id = allUsers.get(index).getId().toString();
+        } catch (IOException ignored){ }
+        return id;
+    }
+
     public static boolean userHasPlaylists(String id) {
         try (Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
-            List<User> allUsers = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             int index = isIdInSystemIdx(id);
             return allUsers.get(index).getNumberOfPlaylists() != 0;
@@ -266,24 +262,41 @@ public class FileHandler {
 
     public static String getListOf(String filter, String keyword, boolean searchByID, String idFilter) {
         try (Reader reader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH))) {
-            List<Song> allSongs = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<Song>>() {}.getType());
+            List<Song> allSongs = GSON.fromJson(reader, new TypeToken<List<Song>>() {}.getType());
             reader.close();
-            // goes through the list of all songs and gets those songs whose title contains the keyword given
-            ArrayList<Tuple2<String, String>> itemsFound = new ArrayList<>();
+
             SEARCH_FILTER filter1 = SEARCH_FILTER.fromValue(filter);
             SEARCH_FILTER idFilter1 = null;
             if (idFilter != null) { idFilter1 = SEARCH_FILTER.fromValue(idFilter); }
 
+            JsonObject object = new JsonObject();
+            // goes through the list of all songs and gets those songs whose title contains the keyword given
             for (Song song : allSongs) {
-                Tuple2<String, String> zzyzx = song.getValueOf(searchByID ? idFilter1 : filter1);
-                String value = searchByID ? zzyzx.getValue0() : (zzyzx.getValue1() != null ? zzyzx.getValue1() : zzyzx.getValue0());
-                if (value.toLowerCase().contains(keyword.toLowerCase().trim()) && freeToAdd(itemsFound, zzyzx)) {
-                    itemsFound.add(searchByID ? song.getValueOf(filter1) : zzyzx);
+                String id = song.getID(searchByID ? idFilter1 : filter1);
+                String name = song.getName(searchByID ? idFilter1 : filter1);
+                String value = searchByID ? id : (name != null ? name : id);
+                if (value.toLowerCase().contains(keyword.toLowerCase().trim()) && isFreeToAdd(object, id)) {
+                    if (searchByID) {
+                        object.addProperty(song.getID(filter1), song.getName(filter1));
+                    } else {
+                        object.addProperty(id, name);
+                    }
                 }
             }
-            return GSON.toJson(itemsFound);
+            return object.toString();
         } catch (IOException ignored) { }
         return null;
+    }
+
+    private static boolean isFreeToAdd(JsonObject jsonObject, String song) {
+        boolean isFreeToAdd = true;
+        Iterator<Map.Entry<String, JsonElement>> it = jsonObject.entrySet().iterator();
+        while (it.hasNext() && isFreeToAdd) {
+            if (it.next().getKey().equals(song)) {
+                isFreeToAdd = false;
+            }
+        }
+        return isFreeToAdd;
     }
 
     private static boolean freeToAdd(List<Tuple2<String, String>> list, Tuple2<String, String> pair) {
@@ -392,7 +405,7 @@ public class FileHandler {
     public static String getSongInfo(String songId) {
         String info = "";
         try (Reader reader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH))) {
-            List<Song> allSongs = new GsonBuilder().setPrettyPrinting().create().fromJson(reader, new TypeToken<List<Song>>() {}.getType());
+            List<Song> allSongs = GSON.fromJson(reader, new TypeToken<List<Song>>() {}.getType());
             reader.close();
             // goes through the list of all songs and gets those songs whose title contains the keyword given
             for (int i = 0; i < allSongs.size() && info.equals(""); i++) {

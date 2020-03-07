@@ -97,8 +97,7 @@ public class Dispatcher implements DispatcherInterface {
             // Prepare the return
             Class returnType = method.getReturnType();
             String ret = "";
-            switch (returnType.getCanonicalName())
-                {
+            switch (returnType.getCanonicalName()) {
                     case "java.lang.Long":
                         ret = method.invoke(object, parameter).toString();
                         break;
@@ -108,15 +107,15 @@ public class Dispatcher implements DispatcherInterface {
                     case "java.lang.String":
                         ret = (String)method.invoke(object, parameter);
                         break;
-                }
-                jsonReturn.addProperty("ret", ret);
+            }
+
+            jsonReturn.addProperty("ret", ret);
    
         } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException | InstantiationException e)
         {
             System.out.println(e.getMessage());
             jsonReturn.addProperty("error", "Error on " + jsonRequest.get("objectName").getAsString() + "." + jsonRequest.get("remoteMethod").getAsString());
         }
-     
         return jsonReturn.toString();
     }
 

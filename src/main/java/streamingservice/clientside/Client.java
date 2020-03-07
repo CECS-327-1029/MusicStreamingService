@@ -21,7 +21,9 @@ public class Client {
 
     // sends messages to the server and returns the response
     public String sendMessage(String msg) {
-        buffer = msg.getBytes();    // message to bytes
+        buffer = new byte[65507];
+        System.arraycopy(msg.getBytes(), 0, buffer, 0, msg.getBytes().length);
+        //buffer = msg.getBytes();    // message to bytes
         String received = null;
         try {
             // create a packet that holds message, address, and port info
@@ -30,6 +32,7 @@ public class Client {
             socket.send(packet);    // send the message
             packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet); // get the message from server
+
             // convert message bytes to string
             received = new String(packet.getData(), 0, packet.getLength());
 

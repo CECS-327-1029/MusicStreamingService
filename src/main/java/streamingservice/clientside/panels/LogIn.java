@@ -1,10 +1,9 @@
 package streamingservice.clientside.panels;
 
-import streamingservice.clientside.Client;
+import com.google.gson.JsonObject;
 import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
 import streamingservice.clientside.ProxyInterface;
-import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +32,8 @@ public class LogIn {
         // checks if the user is in the system when the log in button is clicked
         loginButton.addActionListener(e ->{
             // if the user is in the system show them their profile
-            String userId = FileHandler.getUserNameOrID(usernameInput.getText(), false);
+            JsonObject object = proxy.syncExecution("getUserId", usernameInput.getText());
+            String userId = (String) module.sendMessage(object, "UNKNOWN");
             if(!userId.equals("")) {
                 usernameInput.setText("");
                 usernameNotFoundLabel.setVisible(false);

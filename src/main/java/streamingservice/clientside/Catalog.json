@@ -2,65 +2,71 @@
   {
     "remoteMethod": "isNameInSystem",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userName": "String"
-    }
+    },
+    "return": "boolean"
   },
   {
     "remoteMethod": "isUserNameFreeToUse",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userName": "String"
-    }
+    },
+    "return": "boolean"
   },
   {
     "remoteMethod": "isEmailFreeToUse",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "email": "String"
-    }
+    },
+    "return": "boolean"
   },
   {
     "remoteMethod": "addUserToSystem",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "first": "String",
       "last": "String",
       "email": "String",
       "userName": "String"
-    }
+    },
+    "return": "String"
   },
   {
     "remoteMethod": "getUserPlaylists",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "id": "String"
-    }
+    },
+    "return": "ArrayList<Tuple2<String, String>>"
   },
   {
     "remoteMethod": "getPlaylistSongs",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userId": "String",
       "playlistId": "String"
-    }
+    },
+    "return": "ArrayList<Tuple2<String, String>>"
   },
   {
     "remoteMethod": "updateUserPlaylists",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userId": "String",
@@ -68,183 +74,214 @@
       "songId": "String",
       "songName": "String",
       "shouldAdd": "String"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "createPlaylist",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userId": "String",
       "newPlaylistName": "String"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "deletePlaylist",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userId": "String",
       "newPlaylistName": "String"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "isSongInPlaylist",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param":
     {
       "userId": "String",
       "playlistId": "String",
       "songId": "String"
-    }
+    },
+    "return": "boolean"
   },
   {
-    "remoteMethod": "getUserNameOrID",
+    "remoteMethod": "getUserName",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
-      "keyword": "String",
-      "shouldGetUserName": "boolean"
-    }
+      "keyword": "String"
+    },
+    "return": "String"
+  },
+  {
+    "remoteMethod": "getUserId",
+    "objectName": "FileHandler",
+    "semantics": "at_least_once",
+    "param": {
+      "keyword": "String"
+    },
+    "return": "String"
   },
   {
     "remoteMethod": "userHasPlaylists",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "id": "String"
-    }
+    },
+    "return": "boolean"
   },
   {
     "remoteMethod": "getListOf",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "filter": "SEARCH_FILTER",
       "keyword": "String",
       "searchByID": "boolean",
       "idFilter": "SEARCH_FILTER"
-    }
+    },
+    "return": "ArrayList<Tuple2<String, String>>"
   },
   {
     "remoteMethod": "addSongToQueue",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "userId": "String",
       "song": "Tuple2<String, String>",
       "addLast": "boolean"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "getQueuedSongs",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "userId": "String"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "getQueuedSongs",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "userId": "String"
-    }
+    },
+    "return": "ArrayList<Tuple2<String, String>>"
   },
   {
     "remoteMethod": "clearQueue",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "userId": "String"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "adjustQueue",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "userId": "String",
       "index": "int",
       "removeOnlyIndex": "boolean"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "getSongInfo",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "songId": "String"
-    }
+    },
+    "return": "String"
   },
   {
     "remoteMethod": "getSongPath",
     "objectName": "FileHandler",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "song": "Tuple2<String, String>"
-    }
+    },
+    "return": "String"
   },
   {
     "remoteMethod": "setQueue",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "songsInQueue": "ArrayList<Tuple2<String, String>>"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "play",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
+    "semantics": "at_least_once",
     "param": {
       "song": "Tuple2<String, String>"
-    }
+    },
+    "return": "void"
   },
   {
     "remoteMethod": "pause",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "void"
   },
   {
     "remoteMethod": "resume",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "void"
   },
   {
     "remoteMethod": "stop",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "void"
   },
   {
     "remoteMethod": "next",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "String"
   },
   {
     "remoteMethod": "previous",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "String"
   },
   {
     "remoteMethod": "repeat",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "void"
   },
   {
     "remoteMethod": "shuffle",
     "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_one",
-    "param": {}
+    "semantics": "at_least_once",
+    "param": {},
+    "return": "ArrayList<Tuple2<String, String>>"
   }
 ]

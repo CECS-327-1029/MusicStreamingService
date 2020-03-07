@@ -237,7 +237,9 @@ public class UserProfile {
 
     public void setUser(String userId) {
         this.userId = userId;
-        userNameDisplayLabel.setText(FileHandler.getUserNameOrID(userId, true));
+        JsonObject object = proxy.syncExecution("getUserName", userId);
+        String username = (String) module.sendMessage(object, userId);
+        userNameDisplayLabel.setText(username);
         displayPlaylists();
         displayCurrentlyPlayingSongs(false);
     }
@@ -507,15 +509,13 @@ public class UserProfile {
         displayCurrentlyPlayingSongs(false);
     }
 
+    @SuppressWarnings("unchecked")
     private void search(SEARCH_FILTER searchBy, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
         if (!keyword.trim().equals("")) {
+            JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
             if (searchBy == SEARCH_FILTER.SONGS) {
-                JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
-                module.sendMessage(object, userId);
+                songs = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
 
-                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                String json = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
-                songs = new Gson().fromJson(json, new TypeToken<ArrayList<Tuple2<String, String>>>() {}.getType());
                 if (songs != null) {
                     sort(songs, searchBy);
                     displaySongs();
@@ -526,8 +526,7 @@ public class UserProfile {
                     numberOfItemsLabel.setVisible(true);
                 }
             } else {
-                String json = FileHandler.getListOf(searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
-                masterSearch = new Gson().fromJson(json, new TypeToken<ArrayList<Tuple2<String, String>>>() {}.getType());
+                masterSearch = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
                 if (masterSearch != null) {
                     sort(masterSearch, searchBy);
                     displayMasterSearch();

@@ -12,7 +12,7 @@ public class Server extends Thread {
 
     private DatagramSocket socket;  // used to send packets
     private boolean running;
-    private byte[] buffer = new byte[256];  // contains the message
+    private byte[] buffer;  // contains the message
 
     public Server() throws SocketException {
         // sending or receiving point for a packet
@@ -26,13 +26,13 @@ public class Server extends Thread {
 
         while (running) {
             // receives incoming messages
+            buffer = new byte[65507];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
             // blocks until a message arrives and it stores the message inside
             // the byte array of the packet
             try {
                 socket.receive(packet);
-
                 // get the address and port of the client so that we know who
                 // to respond to
                 InetAddress address = packet.getAddress();
@@ -42,7 +42,7 @@ public class Server extends Thread {
                 packet = new DatagramPacket(buffer, buffer.length, address, port);
 
                 String received = new String(packet.getData(), 0, packet.getLength());
-                buffer = module.compute(received).getBytes();
+                buffer = module.receiveMessage(received).getBytes();
 
                 // this new packet is used to send a message to the client
                 packet = new DatagramPacket(buffer, buffer.length, address, port);
