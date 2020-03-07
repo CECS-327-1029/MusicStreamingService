@@ -84,6 +84,7 @@ public class Dispatcher implements DispatcherInterface {
                         parameter[i] =  Long.parseLong(strParam[i]);
                         break;
                     case "java.lang.Integer":
+                    case "int":
                         parameter[i] =  Integer.parseInt(strParam[i]);
                         break;
                     case "java.lang.String":
@@ -92,6 +93,20 @@ public class Dispatcher implements DispatcherInterface {
                     case "boolean":
                         parameter[i] = Boolean.parseBoolean(strParam[i]);
                         break;
+                    case "java.util.ArrayList":
+                        ArrayList<Tuple2<String, String>> list = new ArrayList<>();
+                        JsonObject object1 = (JsonObject) new JsonParser().parse(strParam[i]);
+                        object1.entrySet().forEach(entry -> list.add(new Tuple2<>(entry.getKey(), entry.getValue().getAsString())));
+                        parameter[i] = list;
+                        break;
+                    case "streamingservice.serverside.Tuple2":
+                        JsonObject object2 = (JsonObject) new JsonParser().parse(strParam[i]);
+                        Iterator<String> keys = object2.keySet().iterator();
+                        String key = keys.next();
+                        String value = object2.get(key).getAsString();
+                        parameter[i] = new Tuple2<>(key, value);
+                        break;
+
                 }
             }
             // Prepare the return
@@ -105,10 +120,14 @@ public class Dispatcher implements DispatcherInterface {
                         ret = method.invoke(object, parameter).toString();
                         break;
                     case "java.lang.String":
-                        ret = (String)method.invoke(object, parameter);
+                        ret = (String) method.invoke(object, parameter);
                         break;
                     case "boolean":
                         ret = String.valueOf(method.invoke(object, parameter));
+                        break;
+                    case "void":
+                        method.invoke(object, parameter);
+                        ret = "void";
                         break;
             }
 
@@ -116,7 +135,6 @@ public class Dispatcher implements DispatcherInterface {
    
         } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException | InstantiationException e)
         {
-            System.out.println(e.getMessage());
             jsonReturn.addProperty("error", "Error on " + jsonRequest.get("objectName").getAsString() + "." + jsonRequest.get("remoteMethod").getAsString());
         }
         return jsonReturn.toString();

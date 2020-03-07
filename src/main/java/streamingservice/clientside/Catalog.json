@@ -156,17 +156,9 @@
     "semantics": "at_least_once",
     "param": {
       "userId": "String",
-      "song": "Tuple2<String, String>",
+      "songId": "String",
+      "songName:": "String",
       "addLast": "boolean"
-    },
-    "return": "void"
-  },
-  {
-    "remoteMethod": "getQueuedSongs",
-    "objectName": "FileHandler",
-    "semantics": "at_least_once",
-    "param": {
-      "userId": "String"
     },
     "return": "void"
   },

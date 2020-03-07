@@ -36,20 +36,23 @@ public class MusicPlayer {
     }
 
     public void play(Tuple2<String, String> song) throws IOException, JavaLayerException {
-        if (player != null) {
-            stop();
-            player.close();
-        }
-        InputStream is = new CECS327InputStream(FileHandler.getSongPath(song));
-        player = new Player(is);
-        synchronized (lock) {
+        if (song != null) {
+            if (player != null) {
+                stop();
+                player.close();
+            }
 
-            if (playerMode == PLAYER_MODE.NOT_STARTED || playerMode == PLAYER_MODE.STOPPED) {
-                Thread thread = new Thread(this::playInternal);
-                thread.setDaemon(true);
-                thread.setPriority(Thread.MAX_PRIORITY);
-                playerMode = PLAYER_MODE.PLAYING;
-                thread.start();
+            InputStream is = new CECS327InputStream(FileHandler.getSongPath(song));
+            player = new Player(is);
+            synchronized (lock) {
+
+                if (playerMode == PLAYER_MODE.NOT_STARTED || playerMode == PLAYER_MODE.STOPPED) {
+                    Thread thread = new Thread(this::playInternal);
+                    thread.setDaemon(true);
+                    thread.setPriority(Thread.MAX_PRIORITY);
+                    playerMode = PLAYER_MODE.PLAYING;
+                    thread.start();
+                }
             }
         }
     }

@@ -6,8 +6,6 @@ import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 
-import com.google.gson.JsonSyntaxException;
-import streamingservice.serverside.Tuple2;
 
 
 public class CommunicationModule {
@@ -48,15 +46,18 @@ public class CommunicationModule {
     private Object readyOutput(JsonObject message) {
         String returnType = message.get("ReturnType").getAsString();
         if (returnType.equals("ArrayList<Tuple2<String, String>>")) {
-            JsonObject returnValue = (JsonObject) new JsonParser().parse(message.get("ret").getAsString());
-            System.out.println(returnValue);
-            ArrayList<Tuple2<String, String>> output = new ArrayList<>();
-            returnValue.entrySet().forEach(entry -> output.add(new Tuple2<>(entry.getKey(), entry.getValue() != JsonNull.INSTANCE ? entry.getValue().getAsString() : null)));
-            return output;
+            if (!message.get("ret").getAsString().equals("null")) {
+                JsonObject returnValue = (JsonObject) new JsonParser().parse(message.get("ret").getAsString());
+                ArrayList<Tuple2<String, String>> output = new ArrayList<>();
+                returnValue.entrySet().forEach(entry -> output.add(new Tuple2<>(entry.getKey(), entry.getValue() != JsonNull.INSTANCE ? entry.getValue().getAsString() : null)));
+                return output;
+            } else { return null; }
         } else if (returnType.equals("String")) {
             return message.get("ret").getAsString();
         } else if (returnType.equals("boolean")) {
             return message.get("ret").getAsBoolean();
+        } else if (returnType.equals("void")) {
+            return null;
         }
         return null;
     }

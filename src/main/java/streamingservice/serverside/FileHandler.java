@@ -85,41 +85,43 @@ public class FileHandler {
         return returnId;
     }
 
-    public static ArrayList<Tuple2<String, String>> getUserPlaylists(String id) {
+    public static String getUserPlaylists(String id) {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
-            ArrayList<Tuple2<String, String>> playlists = new ArrayList<>();
+            //ArrayList<Tuple2<String, String>> playlists = new ArrayList<>();
             List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             int index = isIdInSystemIdx(id);
+            JsonObject object = new JsonObject();
             if (allUsers.get(index).getNumberOfPlaylists() != 0) {
                 for (Playlist playlist : allUsers.get(index).getPlaylists()) {
-                    playlists.add(new Tuple2<>(playlist.getId(), playlist.getPlaylistName()));
+                    //playlists.add(new Tuple2<>(playlist.getId(), playlist.getPlaylistName()));
+                    object.addProperty(playlist.getId(), playlist.getPlaylistName());
                 }
-                return playlists;
+                return object.toString();
             }
-            return null;
+            return "null";
         } catch (IOException ignored) { }
-        return null;
+        return "null";
     }
 
-    public static ArrayList<Tuple2<String, String>> getPlaylistSongs(String userId, String playlistId) {
+    public static String getPlaylistSongs(String userId, String playlistId) {
         try(Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
-            ArrayList<Tuple2<String, String>> songs = new ArrayList<>();
             List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             int index = isIdInSystemIdx(userId);
+            JsonObject object = new JsonObject();
             List<Playlist> playlists = allUsers.get(index).getPlaylists();
             if (playlists.size() != 0) {
-                for (int i = 0; i < playlists.size() && songs.isEmpty(); i++) {
+                for (int i = 0; i < playlists.size() && object.size() == 0; i++) {
                     if (playlists.get(i).getId().equals(playlistId)) {
-                        songs.addAll(playlists.get(i).getSongs());
+                        playlists.get(i).getSongs().forEach(tuple -> object.addProperty(tuple.getValue0(), tuple.getValue1()));
                     }
                 }
-                return songs;
+                return object.toString();
             }
-            return null;
+            return "null";
         } catch (IOException ignored) { }
-        return null;
+        return "null";
     }
 
     public static void updateUserPlaylists(String userId, String playlistId, String songId, String songName, boolean shouldAdd) {
@@ -285,7 +287,7 @@ public class FileHandler {
             }
             return object.toString();
         } catch (IOException ignored) { }
-        return null;
+        return "null";
     }
 
     private static boolean isFreeToAdd(JsonObject jsonObject, String song) {
@@ -309,8 +311,9 @@ public class FileHandler {
         return isFreeToAdd;
     }
 
-    public static void addSongToQueue(String userId, Tuple2<String, String> song, boolean addLast) {
+    public static void addSongToQueue(String userId, String songId, String songName, boolean addLast) {
         try (Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
+            Tuple2<String, String> song = new Tuple2<>(songId, songName);
             List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
             ArrayList<Tuple2<String, String>> queue = allUsers.get(isIdInSystemIdx(userId)).getQueuedSongs();
@@ -325,12 +328,15 @@ public class FileHandler {
 
     }
 
-    public static ArrayList<Tuple2<String, String>> getQueuedSongs(String userId) {
+    public static String getQueuedSongs(String userId) {
         try (Reader reader = Files.newBufferedReader(Paths.get(USER_FILE_PATH))) {
             Gson GSON = new Gson();
             List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
             reader.close();
-            return allUsers.get(isIdInSystemIdx(userId)).getQueuedSongs();
+            JsonObject jsonObject = new JsonObject();
+            allUsers.get(isIdInSystemIdx(userId)).getQueuedSongs()
+                    .forEach(song -> jsonObject.addProperty(song.getValue0(), song.getValue1()));
+            return jsonObject.toString();
         } catch (IOException ignored) { }
         return null;
     }

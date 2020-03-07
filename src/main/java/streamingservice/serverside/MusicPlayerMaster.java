@@ -1,5 +1,6 @@
 package streamingservice.serverside;
 
+import com.google.gson.JsonObject;
 import javazoom.jl.decoder.JavaLayerException;
 
 import java.io.IOException;
@@ -10,12 +11,10 @@ public final class MusicPlayerMaster {
 
     private static final MusicPlayer musicPlayer = new MusicPlayer();
     private static ArrayList<Tuple2<String, String>> queue;
-    private static int currentlyPlayingIndex = -1;
+    private static int currentlyPlayingIndex = 0;
     private static Tuple2<String, String> currentlyPlaying;
 
-    public static void setQueue(ArrayList<Tuple2<String, String>> songsInQueue) {
-        queue = songsInQueue;
-    }
+    public static void setQueue(ArrayList<Tuple2<String, String>> songsInQueue) { queue = songsInQueue; }
     
     public static void play(Tuple2<String, String> song) {
         try {
@@ -30,7 +29,10 @@ public final class MusicPlayerMaster {
 
     public static void resume() { musicPlayer.resume(); }
 
-    public static void stop() { musicPlayer.stop(); }
+    public static void stop() {
+        currentlyPlaying = null;
+        musicPlayer.stop();
+    }
 
     public static String next() {
         if (currentlyPlayingIndex + 1 < queue.size()) {
@@ -38,7 +40,7 @@ public final class MusicPlayerMaster {
             play(queue.get(currentlyPlayingIndex));
             return FileHandler.getSongInfo(currentlyPlaying.getValue0());
         }
-        return null;
+        return "";
     }
 
     public static String previous() {
@@ -47,19 +49,21 @@ public final class MusicPlayerMaster {
             play(queue.get(currentlyPlayingIndex));
             return FileHandler.getSongInfo(currentlyPlaying.getValue0());
         }
-        return null;
+        return "";
     }
 
     public static void repeat() {
         play(currentlyPlaying);
     }
 
-    public static ArrayList<Tuple2<String, String>> shuffle() {
+    public static String shuffle() {
         queue.remove(currentlyPlayingIndex);
         Collections.shuffle(queue);
         queue.add(0, currentlyPlaying);
-        currentlyPlayingIndex = -1;
-        return queue;
+        currentlyPlayingIndex = 0;
+        JsonObject object = new JsonObject();
+        queue.forEach(song -> object.addProperty(song.getValue0(), song.getValue1()));
+        return object.toString();
     }
 
 
