@@ -1,10 +1,9 @@
 package streamingservice.clientside.panels;
 
-import streamingservice.clientside.Client;
+import com.google.gson.JsonObject;
 import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
 import streamingservice.clientside.ProxyInterface;
-import streamingservice.serverside.FileHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +70,9 @@ public class CreateAccount {
      * Creates an account based on the information given in the form.
      */
     private String createAccount() {
-        return FileHandler.addUserToSystem(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
+        JsonObject object = proxy.syncExecution("addUserToSystem", firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
+        String id = (String) module.sendMessage(object, "UNKNOWN");
+        return id;//FileHandler.addUserToSystem(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
     }
 
     /**
@@ -156,8 +157,10 @@ public class CreateAccount {
      * @return true if the user can use the fields chosen, false if they can't
      */
     private boolean areAllNecessaryEntriesValid() {
-        boolean isUserNameFree = FileHandler.isUserNameFreeToUse(userNameTF.getText());
-        boolean isEmailFree = FileHandler.isEmailFreeToUse(emailTF.getText());
+        JsonObject object = proxy.syncExecution("isUserNameFreeToUse", userNameTF.getText());
+        boolean isUserNameFree = (boolean) module.sendMessage(object, "UNKNOWN");
+        JsonObject object2 = proxy.syncExecution("isEmailFreeToUse", emailTF.getText());
+        boolean isEmailFree = (boolean) module.sendMessage(object2, "UNKNOWN");
 
         if (!isUserNameFree) {
             // tell the user name is in use

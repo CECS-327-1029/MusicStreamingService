@@ -55,6 +55,8 @@ public class CommunicationModule {
             return output;
         } else if (returnType.equals("String")) {
             return message.get("ret").getAsString();
+        } else if (returnType.equals("boolean")) {
+            return message.get("ret").getAsBoolean();
         }
         return null;
     }

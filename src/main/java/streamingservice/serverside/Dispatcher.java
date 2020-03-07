@@ -107,6 +107,9 @@ public class Dispatcher implements DispatcherInterface {
                     case "java.lang.String":
                         ret = (String)method.invoke(object, parameter);
                         break;
+                    case "boolean":
+                        ret = String.valueOf(method.invoke(object, parameter));
+                        break;
             }
 
             jsonReturn.addProperty("ret", ret);
