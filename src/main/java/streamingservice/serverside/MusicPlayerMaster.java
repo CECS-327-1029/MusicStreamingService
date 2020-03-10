@@ -2,6 +2,7 @@ package streamingservice.serverside;
 
 import com.google.gson.JsonObject;
 import javazoom.jl.decoder.JavaLayerException;
+import streamingservice.clientside.MusicPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import com.google.gson.JsonObject;
-import streamingservice.serverside.ProxyInterface;
+import streamingservice.clientside.ProxyInterface;
 
 import java.util.concurrent.Semaphore;
 
@@ -54,7 +54,7 @@ public class CECS327RemoteInputStream extends InputStream {
     /**
     * Instance of an implementation of proxyInterface
     */
-    protected streamingservice.serverside.ProxyInterface proxy;
+    protected ProxyInterface proxy;
     
     Semaphore sem; 
 
@@ -76,7 +76,7 @@ public class CECS327RemoteInputStream extends InputStream {
         this.fileName = fileName;        
         this.buf  = new byte[FRAGMENT_SIZE];	
         this.nextBuf  = new byte[FRAGMENT_SIZE];	
-        JsonObject jsonRet = proxy.synchExecution("getFileSize", String.valueOf(this.fileName));
+        JsonObject jsonRet = proxy.syncExecution("getFileSize", String.valueOf(this.fileName));
         this.total = Integer.parseInt(jsonRet.get("ret").getAsString());
         getBuff(fragment);
         fragment++;
@@ -92,7 +92,7 @@ public class CECS327RemoteInputStream extends InputStream {
         {
             public void run() {
              
-                JsonObject jsonRet = proxy.synchExecution("getSongChunk", fileName, fragment);
+                JsonObject jsonRet = proxy.syncExecution("getSongChunk", fileName, fragment);
                 String s = jsonRet.get("ret").getAsString();
                 nextBuf = Base64.getDecoder().decode(s);
                 sem.release(); 
@@ -107,8 +107,7 @@ public class CECS327RemoteInputStream extends InputStream {
     */
     @Override
     public synchronized int read() throws IOException {
-     
-     
+
 	  if (pos >= total) 
 	  {	
             pos = 0;      

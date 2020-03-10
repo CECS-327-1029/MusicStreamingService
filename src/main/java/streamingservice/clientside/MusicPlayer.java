@@ -1,9 +1,14 @@
-package streamingservice.serverside;
+package streamingservice.clientside;
 
 import java.io.*;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import streamingservice.serverside.FileHandler;
+import streamingservice.clientside.ProxyInterface;
+import streamingservice.serverside.SongDispatcher;
 
 public class MusicPlayer {
 
@@ -15,8 +20,14 @@ public class MusicPlayer {
 
     private Player player;
 
+    private ProxyInterface proxy;
+
     // helps lock the thread that plays the music
     private final Object lock = new Object();
+
+    /***/
+    private static final String MUSIC_FILE_PATH = "resources" + System.getProperty("file.separator") + "getSongChunk.json";
+    /***/
 
     // sets the player mode to STOPPED which in turn stops the music
     public void stop() {
@@ -42,8 +53,19 @@ public class MusicPlayer {
                 player.close();
             }
 
-            InputStream is = new CECS327InputStream(FileHandler.getSongPath(song));
-            player = new Player(is);
+            /***/
+            Object obj = new JsonParser().parse(new FileReader("getSongChunk.json"));
+            JsonObject chunkSong = (JsonObject) obj;
+            /***/
+
+            //JsonObject object = proxy.syncExecution("getSongChunk", "song", "fragment");
+            //InputStream is = new CECS327InputStream(FileHandler.getSongPath(song));
+
+            /***/
+            InputStream ris = new CECS327RemoteInputStream(chunkSong.get("song").getAsLong(), proxy);
+            /***/
+
+            player = new Player(ris);
             synchronized (lock) {
 
                 if (playerMode == PLAYER_MODE.NOT_STARTED || playerMode == PLAYER_MODE.STOPPED) {
@@ -90,5 +112,4 @@ public class MusicPlayer {
             }
         }
     }
-
 }

@@ -651,6 +651,7 @@ public class UserProfile {
 
     private void playSelectedSong(Tuple2<String, String> songToPlay) {
         JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, songToPlay.getValue0(), songToPlay.getValue1(), false);
+
         module.sendMessage(object1, userId);
         displayCurrentlyPlayingSongs(true);
     }
