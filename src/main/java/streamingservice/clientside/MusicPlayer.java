@@ -1,36 +1,34 @@
 package streamingservice.clientside;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 public class MusicPlayer {
 
-    // determines the mode the player is in at any moment
-    enum PLAYER_MODE {PLAYING, PAUSED, NOT_STARTED, STOPPED}
-
-    // initial mode of the player
-    private PLAYER_MODE playerMode = PLAYER_MODE.NOT_STARTED;
+    enum PLAYER_MODE {PLAYING, PAUSED, NOT_STARTED, STOPPED}    // determines the mode the player is in at any moment
+    private PLAYER_MODE playerMode = PLAYER_MODE.NOT_STARTED;   // initial mode of the player
+    private final Object lock = new Object();                   // helps lock the thread that plays the music
 
     private Player player;
-
     private ProxyInterface proxy;
 
-    // helps lock the thread that plays the music
-    private final Object lock = new Object();
+    private ArrayList<Tuple2<String, String>> queue;    // list of songs
+    private int currentlyPlayingSong = -1;              // specifies which song is playing. -1 means no song is playing
 
-    public MusicPlayer(ProxyInterface proxy) {
-        this.proxy = proxy;
-    }
+    public MusicPlayer(ProxyInterface proxy) { this.proxy = proxy; }
 
-    /***/
+    public void setQueue(ArrayList<Tuple2<String, String>> queue) { this.queue = queue; }
 
     // sets the player mode to STOPPED which in turn stops the music
     public void stop() {
         synchronized (lock) {
             playerMode = PLAYER_MODE.STOPPED;
             lock.notifyAll();
+            currentlyPlayingSong = -1;
         }
     }
 
@@ -48,20 +46,13 @@ public class MusicPlayer {
             if (player != null) {
                 stop();
                 player.close();
+                currentlyPlayingSong = -1;
             }
 
-//            Object obj = new JsonParser().parse(new FileReader("getSongChunk.json"));
-//            JsonObject chunkSong = (JsonObject) obj;
-
-
-            //JsonObject object = proxy.syncExecution("getSongChunk", "song", "fragment");
-            //InputStream is = new CECS327InputStream(FileHandler.getSongPath(song));
-
             InputStream ris = new CECS327RemoteInputStream(song.getValue0(), proxy);
-
             player = new Player(ris);
+            currentlyPlayingSong = queue.indexOf(song);
             synchronized (lock) {
-
                 if (playerMode == PLAYER_MODE.NOT_STARTED || playerMode == PLAYER_MODE.STOPPED) {
                     Thread thread = new Thread(this::playInternal);
                     thread.setDaemon(true);
@@ -82,6 +73,39 @@ public class MusicPlayer {
                 lock.notifyAll();
             }
         }
+    }
+
+    public String next() throws IOException, JavaLayerException {
+        if (currentlyPlayingSong + 1 < queue.size()) {
+            currentlyPlayingSong++;
+            play(queue.get(currentlyPlayingSong));
+            return queue.get(currentlyPlayingSong).getValue0();
+        }
+        return "";
+    }
+
+    public String previous() throws IOException, JavaLayerException {
+        if (currentlyPlayingSong - 1 >= 0) {
+            currentlyPlayingSong--;
+            play(queue.get(currentlyPlayingSong));
+            return queue.get(currentlyPlayingSong).getValue0();
+        }
+        return "";
+    }
+
+    public void repeat() throws IOException, JavaLayerException {
+        stop();
+        play(queue.get(currentlyPlayingSong));
+    }
+
+    public ArrayList<Tuple2<String, String>> shuffle(int playingSongIndex) {
+        if (queue.size() != 0) {
+            Tuple2<String, String> song = queue.remove(playingSongIndex == -1 ? 0 : playingSongIndex);
+            Collections.shuffle(queue);
+            queue.add(0, song);
+            currentlyPlayingSong = 0;
+        }
+        return queue;
     }
 
     // will loop until the last until the last frame is played

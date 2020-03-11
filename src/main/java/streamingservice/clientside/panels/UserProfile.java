@@ -1,8 +1,7 @@
 package streamingservice.clientside.panels;
 
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import javazoom.jl.decoder.JavaLayerException;
 import streamingservice.clientside.*;
 
 import javax.swing.*;
@@ -10,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.*;
 
 public class UserProfile {
@@ -23,7 +23,7 @@ public class UserProfile {
     private static final int MAX_AMOUNT_TO_DISPLAY = 25;
 
     private ProxyInterface proxy;
-    private MusicPlayerMaster musicPlayerMaster;
+    private MusicPlayer musicPlayer;
 
     private String userId = "";
     // keeps track of what is being searched. Initial value is Songs
@@ -126,7 +126,7 @@ public class UserProfile {
     public UserProfile(JFrame mainFrame, ProxyInterface proxy) {
         this.mainFrame = mainFrame;
         this.proxy = proxy;
-        this.musicPlayerMaster = new MusicPlayerMaster(proxy);
+        this.musicPlayer = new MusicPlayer(proxy);
 
         songs = new ArrayList<>();
         masterSearch = new ArrayList<>();
@@ -153,7 +153,13 @@ public class UserProfile {
         removePlaylistBtn.addActionListener(e -> deletePlaylist());
 
         // start playing a song
-        playButton.addActionListener(e -> playButtonActionListener());
+        playButton.addActionListener(e -> {
+            try {
+                playButtonActionListener();
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // pause a playing song
         pauseButton.addActionListener(e -> pauseButtonActionListener());
@@ -165,16 +171,40 @@ public class UserProfile {
         stopButton.addActionListener(e -> stopButtonActionListener());
 
         // play the next song if available
-        nextButton.addActionListener(e -> nextButtonActionListener());
+        nextButton.addActionListener(e -> {
+            try {
+                nextButtonActionListener();
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // play the previous song if available
-        previousButton.addActionListener(e -> previousButtonActionListener());
+        previousButton.addActionListener(e -> {
+            try {
+                previousButtonActionListener();
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // repeat the song that's playing
-        repeatButton.addActionListener(e -> repeatButtonActionListener());
+        repeatButton.addActionListener(e -> {
+            try {
+                repeatButtonActionListener();
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // shuggle the queue if not empty
-        shuffleButton.addActionListener(e -> shuffleButtonActionListener());
+        shuffleButton.addActionListener(e -> {
+            try {
+                shuffleButtonActionListener();
+            } catch (IOException | JavaLayerException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // popup menu in the searchedItemsJList
         final JPopupMenu songPopupMenu = new JPopupMenu();
@@ -216,21 +246,33 @@ public class UserProfile {
         searchedItemsJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setSearchedItemsJListMouseListener(e, songPopupMenu);
+                try {
+                    setSearchedItemsJListMouseListener(e, songPopupMenu);
+                } catch (IOException | JavaLayerException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
         playlistJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setPlaylistJListMouseListener(e, songToRemovePopupMenu, playlistPopupMenu);
+                try {
+                    setPlaylistJListMouseListener(e, songToRemovePopupMenu, playlistPopupMenu);
+                } catch (IOException | JavaLayerException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
         queueJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setQueueJListMouseListener(e, queuePopupMenu, clearQueuePopupMenu);
+                try {
+                    setQueueJListMouseListener(e, queuePopupMenu, clearQueuePopupMenu);
+                } catch (IOException | JavaLayerException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
@@ -242,7 +284,8 @@ public class UserProfile {
         String username = (String) proxy.adjustOutput(object);
         userNameDisplayLabel.setText(username);
         displayPlaylists();
-        displayCurrentlyPlayingSongs(false);
+        try { displayCurrentlyPlayingSongs(false);
+        } catch (IOException | JavaLayerException e) {e.printStackTrace();}
     }
 
     public JPanel getUserProfilePanel() { return userProfilePanel; }
@@ -307,7 +350,7 @@ public class UserProfile {
         currentlyPlayingPanel.add(currentlyPlayingScrollPane);
     }
 
-    private void setSearchedItemsJListMouseListener(MouseEvent mouseEvent, JPopupMenu songPopupMenu) {
+    private void setSearchedItemsJListMouseListener(MouseEvent mouseEvent, JPopupMenu songPopupMenu) throws IOException, JavaLayerException {
 
         if (SwingUtilities.isRightMouseButton(mouseEvent) && !searchedItemsJList.isSelectionEmpty() && showingListOfSongs
                 && searchedItemsJList.locationToIndex(mouseEvent.getPoint()) == searchedItemsJList.getSelectedIndex()) {
@@ -342,7 +385,7 @@ public class UserProfile {
         }
     }
 
-    private void setPlaylistJListMouseListener(MouseEvent mouseEvent, JPopupMenu songToRemovePopupMenu, JPopupMenu playlistPopupMenu) {
+    private void setPlaylistJListMouseListener(MouseEvent mouseEvent, JPopupMenu songToRemovePopupMenu, JPopupMenu playlistPopupMenu) throws IOException, JavaLayerException {
 
         if (lookingAtPlaylistList) {
             playListUserIsIn = ((JList) mouseEvent.getSource()).locationToIndex(mouseEvent.getPoint());
@@ -377,7 +420,7 @@ public class UserProfile {
 
     }
 
-    private void setQueueJListMouseListener(MouseEvent mouseEvent, JPopupMenu queuePopupMenu, JPopupMenu clearQueuePopupMenu) {
+    private void setQueueJListMouseListener(MouseEvent mouseEvent, JPopupMenu queuePopupMenu, JPopupMenu clearQueuePopupMenu) throws IOException, JavaLayerException {
 
         if (SwingUtilities.isRightMouseButton(mouseEvent) && queueJList.getSelectedIndex() == -1) {
             clearQueuePopupMenu.show(queueJList, mouseEvent.getX(), mouseEvent.getY());
@@ -431,7 +474,8 @@ public class UserProfile {
 
         JsonObject object = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
         proxy.adjustOutput(object);
-        displayCurrentlyPlayingSongs(songsInQueue.size() == 0);
+        try { displayCurrentlyPlayingSongs(songsInQueue.size() == 0);
+        } catch (IOException | JavaLayerException e) {e.printStackTrace();}
     }
 
     private void removeFromPlaylistOptionActionListener(ActionEvent actionEvent) {
@@ -443,7 +487,7 @@ public class UserProfile {
     }
 
     @SuppressWarnings("unchecked")
-    private void startPlayingPlaylistActionListener(ActionEvent actionEvent) {
+    private void startPlayingPlaylistActionListener(ActionEvent actionEvent)  {
         queueModel.clear();
         songsInQueue.clear();
         JsonObject object = proxy.syncExecution("getPlaylistSongs", userId, playlists.get(playlistJList.getSelectedIndex() ).getValue0());
@@ -456,7 +500,8 @@ public class UserProfile {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
                 proxy.adjustOutput(object1);
             });
-            displayCurrentlyPlayingSongs(true);
+            try { displayCurrentlyPlayingSongs(true);
+            } catch (IOException | JavaLayerException e) {e.printStackTrace();}
         }
     }
 
@@ -469,23 +514,26 @@ public class UserProfile {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
                 proxy.adjustOutput(object1);
             });
-            displayCurrentlyPlayingSongs(true);
+            try { displayCurrentlyPlayingSongs(true);
+            } catch (IOException | JavaLayerException e) {e.printStackTrace();}
         }
     }
 
     private void removeFromQueueActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("adjustQueue", userId, queueJList.getSelectedIndex(), true);
         proxy.adjustOutput(object);
-        displayCurrentlyPlayingSongs(false);
+        try { displayCurrentlyPlayingSongs(false);
+        } catch (IOException | JavaLayerException e) {e.printStackTrace();}
     }
 
     private void clearQueueActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("clearQueue", userId);
         proxy.adjustOutput(object);
-        displayCurrentlyPlayingSongs(false);
+        try { displayCurrentlyPlayingSongs(songsInQueue.size() == 0);
+        } catch (IOException | JavaLayerException e) {e.printStackTrace();}
     }
 
-    private void playButtonActionListener() {
+    private void playButtonActionListener() throws IOException, JavaLayerException {
         if (songsInQueue.contains(lastSelectedSong)) {
             int index = songsInQueue.indexOf(lastSelectedSong);
             if (index != -1) {
@@ -499,20 +547,20 @@ public class UserProfile {
     }
 
     private void pauseButtonActionListener() {
-        musicPlayerMaster.pause();
+        musicPlayer.pause();
     }
 
     private void resumeButtonActionListener() {
-        musicPlayerMaster.resume();
+        musicPlayer.resume();
     }
 
     private void stopButtonActionListener() {
-        musicPlayerMaster.stop();
+        musicPlayer.stop();
         mainFrame.setTitle("");
     }
 
-    private void nextButtonActionListener() {
-        String songId = musicPlayerMaster.next();
+    private void nextButtonActionListener() throws IOException, JavaLayerException {
+        String songId = musicPlayer.next();
         if (!songId.equals("")) {
             JsonObject object = proxy.syncExecution("getSongInfo", songId);
             mainFrame.setTitle((String) proxy.adjustOutput(object));
@@ -520,8 +568,8 @@ public class UserProfile {
         }
     }
 
-    private void previousButtonActionListener() {
-        String songId = musicPlayerMaster.previous();
+    private void previousButtonActionListener() throws IOException, JavaLayerException {
+        String songId = musicPlayer.previous();
         if (!songId.equals("")) {
             JsonObject object = proxy.syncExecution("getSongInfo", songId);
             mainFrame.setTitle((String) proxy.adjustOutput(object));
@@ -529,16 +577,16 @@ public class UserProfile {
         }
     }
 
-    private void repeatButtonActionListener() {
-        musicPlayerMaster.repeat();
+    private void repeatButtonActionListener() throws IOException, JavaLayerException {
+        musicPlayer.repeat();
     }
 
     @SuppressWarnings("unchecked")
-    private void shuffleButtonActionListener() {
+    private void shuffleButtonActionListener() throws IOException, JavaLayerException {
         JsonObject object = proxy.syncExecution("clearQueue", userId);
         proxy.adjustOutput(object);
 
-        ArrayList<Tuple2<String, String>> returnValue = musicPlayerMaster.shuffle();
+        ArrayList<Tuple2<String, String>> returnValue = musicPlayer.shuffle(currentlyPlayingSongIndex);
         if (returnValue != null) {
             returnValue.forEach(song -> {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
@@ -553,25 +601,30 @@ public class UserProfile {
         if (!keyword.trim().equals("")) {
             JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID,
                     idFilter != null ? idFilter.toString() : null, startIdx, MAX_AMOUNT_TO_DISPLAY);
-            ArrayList<Tuple2<String, String>> searchedFor = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
+            Object returnValue =  proxy.adjustOutput(object);
 
-            if (searchBy == SEARCH_FILTER.SONGS) {
-                if (!wasDisplayMorePressed) {
-                    songs.clear();
+            if (returnValue != null) {
+                ArrayList<Tuple2<String, String>> searchedFor = (ArrayList<Tuple2<String, String>>) returnValue;
+                if (searchBy == SEARCH_FILTER.SONGS) {
+                    if (!wasDisplayMorePressed) {
+                        songs.clear();
+                    }
+                    songs.addAll(searchedFor);
+                    displaySongs();
+                    numberOfItemsLabel.setText("Showing " + songs.size() + " song(s)");
+                    numberOfItemsLabel.setVisible(true);
+                    displayMore.setVisible(true);
+
+                } else {
+                    if (!wasDisplayMorePressed) {
+                        masterSearch.clear();
+                    }
+                    masterSearch.addAll(searchedFor);
+                    displayMasterSearch();
+                    numberOfItemsLabel.setText("Showing " + masterSearch.size() + " " + searchBy.toString().toLowerCase() + "(s)");
+                    numberOfItemsLabel.setVisible(true);
+                    displayMore.setVisible(true);
                 }
-                songs.addAll(searchedFor);
-                displaySongs();
-                numberOfItemsLabel.setText("Showing " + songs.size() + " song(s)");
-                numberOfItemsLabel.setVisible(true);
-                displayMore.setVisible(true);
-
-            } else {
-                if (!wasDisplayMorePressed) { masterSearch.clear(); }
-                masterSearch.addAll(searchedFor);
-                displayMasterSearch();
-                numberOfItemsLabel.setText("Showing " + masterSearch.size() + " " + searchBy.toString().toLowerCase() + "(s)");
-                numberOfItemsLabel.setVisible(true);
-                displayMore.setVisible(true);
             }
         }
     }
@@ -638,7 +691,7 @@ public class UserProfile {
     }
 
     @SuppressWarnings("unchecked")
-    private void displayCurrentlyPlayingSongs(boolean startPlayingFirst) {
+    private void displayCurrentlyPlayingSongs(boolean startPlayingFirst) throws IOException, JavaLayerException {
         JsonObject object = proxy.syncExecution("getQueuedSongs", userId);
         songsInQueue = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         if (songsInQueue != null) {
@@ -646,11 +699,10 @@ public class UserProfile {
             songsInQueue.forEach(song -> queueModel.addElement(song.getValue1()));
             queueJList.setModel(queueModel);
 
-            musicPlayerMaster.setQueue(songsInQueue);
+            musicPlayer.setQueue(songsInQueue);
             queueJList.setSelectedIndex(0);
             if (startPlayingFirst) {
-                musicPlayerMaster.play(songsInQueue.get(0));
-                musicPlayerMaster.play(songsInQueue.get(0));
+                musicPlayer.play(songsInQueue.get(0));
                 object = proxy.syncExecution("getSongInfo", songsInQueue.get(0).getValue0());
                 mainFrame.setTitle((String) proxy.adjustOutput(object));
                 currentlyPlayingSongIndex = 0;
@@ -671,7 +723,7 @@ public class UserProfile {
         return json.toString();
     }
 
-    private void playSelectedSong(Tuple2<String, String> songToPlay) {
+    private void playSelectedSong(Tuple2<String, String> songToPlay) throws IOException, JavaLayerException {
         JsonObject object = proxy.syncExecution("addSongToQueue", userId, songToPlay.getValue0(), songToPlay.getValue1(), false);
         proxy.adjustOutput(object);
         displayCurrentlyPlayingSongs(true);

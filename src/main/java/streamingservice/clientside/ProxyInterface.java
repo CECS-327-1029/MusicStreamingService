@@ -77,21 +77,25 @@ public class ProxyInterface {
     }
 
     public Object adjustOutput(JsonObject message) {
-        String returnType = message.get("ReturnType").getAsString();
-        if (returnType.equals("ArrayList<Tuple2<String, String>>")) {
-            if (!message.get("ret").getAsString().equals("null")) {
-                JsonObject returnValue = (JsonObject) new JsonParser().parse(message.get("ret").getAsString());
-                ArrayList<Tuple2<String, String>> output = new ArrayList<>();
-                returnValue.entrySet().forEach(entry -> output.add(new Tuple2<>(entry.getKey(),
-                        entry.getValue() != JsonNull.INSTANCE ? entry.getValue().getAsString() : null)));
-                return output;
-            } else { return null; }
-        } else if (returnType.equals("String")) {
-            return message.get("ret").getAsString();
-        } else if (returnType.equals("boolean")) {
-            return message.get("ret").getAsBoolean();
-        } else if (returnType.equals("void")) {
-            return null;
+        if (message != null) {
+            String returnType = message.get("ReturnType").getAsString();
+            if (returnType.equals("ArrayList<Tuple2<String, String>>")) {
+                if (!message.get("ret").getAsString().equals("null")) {
+                    JsonObject returnValue = (JsonObject) new JsonParser().parse(message.get("ret").getAsString());
+                    ArrayList<Tuple2<String, String>> output = new ArrayList<>();
+                    returnValue.entrySet().forEach(entry -> output.add(new Tuple2<>(entry.getKey(),
+                            entry.getValue() != JsonNull.INSTANCE ? entry.getValue().getAsString() : null)));
+                    return output;
+                } else {
+                    return null;
+                }
+            } else if (returnType.equals("String")) {
+                return message.get("ret").getAsString();
+            } else if (returnType.equals("boolean")) {
+                return message.get("ret").getAsBoolean();
+            } else if (returnType.equals("void")) {
+                return null;
+            }
         }
         return null;
     }

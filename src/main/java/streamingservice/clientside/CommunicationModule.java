@@ -24,8 +24,6 @@ public class CommunicationModule {
         if (message.has("ret")) {
             sendAcknowledgment(message);
             return message;
-        } else {
-            System.out.println("Something went wrong!");
         }
         return null;
     }
