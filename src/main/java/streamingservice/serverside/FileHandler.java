@@ -433,7 +433,7 @@ public class FileHandler {
     }
 
     /**
-     * This method wil find the path of the song in the system.
+     * This method will find the path of the song in the system.
      * But for testing purposes, only use the imperial sound
      * @param song a <Code>Song</Code> object
      * @return the relative path of the song
@@ -443,5 +443,4 @@ public class FileHandler {
         // return MP3_DIRECTORY_PATH + song.getValue0() + ".mp3";
         return IMPERIAL_SONG_PATH;
     }
-
 }

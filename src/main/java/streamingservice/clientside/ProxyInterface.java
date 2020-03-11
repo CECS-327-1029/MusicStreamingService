@@ -10,10 +10,30 @@ public class ProxyInterface {
     private static final String FS = System.getProperty("file.separator");
     private static final String CATALOG_FILE = "src"+FS+"main"+FS+"java"+FS+"streamingservice"+FS+"clientside"+FS+"Catalog.json";
 
+    /***/
+    private String userID;
+    private Client client;
+    /***/
+
     public JsonObject syncExecution(String remoteMethod, Object... args) {
+
+        /***/
+        CommunicationModule cm = new CommunicationModule(client);
+        /***/
+
         JsonObject json = searchInCatalog(remoteMethod);
         return replaceParams(json, args);
     }
+
+    /***/
+    private void setUserId(String uID){
+        this.userID = uID;
+    }
+
+    private void setClient(Client cli){
+        this.client = cli;
+    }
+    /***/
 
     /**
      * Searches the Catalog.json file for the respective information on the method.
@@ -62,5 +82,6 @@ public class ProxyInterface {
         }
         return json;
     }
+
 
 }

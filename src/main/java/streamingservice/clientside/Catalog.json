@@ -277,5 +277,15 @@
     "semantics": "at_least_once",
     "param": {},
     "return": "ArrayList<Tuple2<String, String>>"
+  },
+  {
+    "remoteMethod":"getSongChunk",
+    "objectName":"SongServices",
+    "param":
+    {
+      "song": "long",
+      "fragment": "long"
+    }
   }
+
 ]
