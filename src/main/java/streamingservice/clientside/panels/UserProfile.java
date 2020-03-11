@@ -20,6 +20,7 @@ public class UserProfile {
     private static final Color SCROLLABLE_BACKGROUND = Color.decode("#0752CB");
     private static final Dimension CURRENTLY_PLAYING_DIMENSION = new Dimension(360, 520);
     private static final Dimension DIMENSION_200 = new Dimension(200, 200);
+    private static final int MAX_AMOUNT_TO_DISPLAY = 25;
 
     private ProxyInterface proxy;
     private CommunicationModule module;
@@ -79,6 +80,9 @@ public class UserProfile {
     private JButton searchButton;               // button that searched for information based on the search filter
     private JLabel songListLabel;
     private JLabel numberOfItemsLabel;          // displays how many items were found
+    private JButton displayMore;
+    private boolean wasDisplayMorePressed = false;
+    private int masterSearchIndex = -1;
 
     // Song List Display Panel. Holds the widgets that will display the songs, artists, etc.
     private JPanel songListDisplayPanel;
@@ -138,7 +142,9 @@ public class UserProfile {
         setCurrentlyPlayingPanel();
 
         // will search by the option given in the searchFiler combo box
-        searchButton.addActionListener(e -> search(searchStrategy, searchTF.getText(), false, null));
+        searchButton.addActionListener(e -> search(searchStrategy, searchTF.getText(), false, null, 0));
+
+        displayMore.addActionListener(e -> displayMoreActionListener());
 
         // creates a new playlist
         addPlaylistButton.addActionListener(e -> createPlaylist());
@@ -309,11 +315,11 @@ public class UserProfile {
             displayPlaylists();
             songPopupMenu.show(searchedItemsJList, mouseEvent.getX(), mouseEvent.getY());
         }
-        int index = ((JList) mouseEvent.getSource()).locationToIndex(mouseEvent.getPoint());
+        masterSearchIndex = ((JList) mouseEvent.getSource()).locationToIndex(mouseEvent.getPoint());
 
         if (searchStrategy == SEARCH_FILTER.SONGS) {
             lastSelectedSong = songs.get(searchedItemsJList.getSelectedIndex());
-        } else if (!showMasterSearchedItems && index > 0) {
+        } else if (!showMasterSearchedItems && masterSearchIndex > 0) {
             lastSelectedSong = songs.get(searchedItemsJList.getSelectedIndex() - 1);
         }
 
@@ -325,11 +331,12 @@ public class UserProfile {
 
                 if (showMasterSearchedItems) {   // display songs from selected value
                    // search for songs with selected value's id
-                   search(SEARCH_FILTER.SONGS, masterSearch.get(index).getValue0(), true, searchStrategy);
+                   search(SEARCH_FILTER.SONGS, masterSearch.get(masterSearchIndex).getValue0(), true, searchStrategy, 0);
                    showMasterSearchedItems = false;
-               } else if (index == 0) { // showing a filter's songs -> go back
+               } else if (masterSearchIndex == 0) { // showing a filter's songs -> go back
                    displayMasterSearch();
-               } else {
+                    numberOfItemsLabel.setText("Showing " + masterSearch.size() + " " + searchStrategy.toString().toLowerCase() + "(s)");
+                } else {
                    playSelectedSong(songs.get(searchedItemsJList.getSelectedIndex() - 1));
                }
             }
@@ -541,32 +548,43 @@ public class UserProfile {
     }
 
     @SuppressWarnings("unchecked")
-    private void search(SEARCH_FILTER searchBy, String keyword, boolean searchByID, SEARCH_FILTER idFilter) {
+    private void search(SEARCH_FILTER searchBy, String keyword, boolean searchByID, SEARCH_FILTER idFilter, int startIdx) {
         if (!keyword.trim().equals("")) {
-            JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID, idFilter != null ? idFilter.toString() : null);
-            if (searchBy == SEARCH_FILTER.SONGS) {
-                songs = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+            JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID,
+                    idFilter != null ? idFilter.toString() : null, startIdx, MAX_AMOUNT_TO_DISPLAY);
+            ArrayList<Tuple2<String, String>> searchedFor = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
 
-                if (songs != null) {
-                    sort(songs, searchBy);
-                    displaySongs();
-                    numberOfItemsLabel.setText(songs.size() + " song(s)");
-                    numberOfItemsLabel.setVisible(true);
-                } else {
-                    numberOfItemsLabel.setText(keyword + " Not Found");
-                    numberOfItemsLabel.setVisible(true);
+            if (searchBy == SEARCH_FILTER.SONGS) {
+                if (!wasDisplayMorePressed) {
+                    songs.clear();
                 }
+                songs.addAll(searchedFor);
+                displaySongs();
+                numberOfItemsLabel.setText("Showing " + songs.size() + " song(s)");
+                numberOfItemsLabel.setVisible(true);
+                displayMore.setVisible(true);
+
             } else {
-                masterSearch = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
-                if (masterSearch != null) {
-                    sort(masterSearch, searchBy);
-                    displayMasterSearch();
-                    numberOfItemsLabel.setText(masterSearch.size() + " " + searchBy.toString().toLowerCase() + "(s)");
-                    numberOfItemsLabel.setVisible(true);
-                } else {
-                    numberOfItemsLabel.setText(keyword + " Not Found");
-                    numberOfItemsLabel.setVisible(true);
-                }
+                if (!wasDisplayMorePressed) { masterSearch.clear(); }
+                masterSearch.addAll(searchedFor);
+                displayMasterSearch();
+                numberOfItemsLabel.setText("Showing " + masterSearch.size() + " " + searchBy.toString().toLowerCase() + "(s)");
+                numberOfItemsLabel.setVisible(true);
+                displayMore.setVisible(true);
+            }
+        }
+    }
+
+    private void displayMoreActionListener() {
+        wasDisplayMorePressed = true;
+        if (searchStrategy == SEARCH_FILTER.SONGS) {
+            search(searchStrategy, searchTF.getText(), false, null, songs.size());
+        } else {
+            if (showMasterSearchedItems) {
+                search(searchStrategy, searchTF.getText(), false, null, masterSearch.size());
+            } else {
+                search(SEARCH_FILTER.SONGS, masterSearch.get(masterSearchIndex).getValue0(), true,
+                        searchStrategy, masterSearch.size());
             }
         }
     }
@@ -579,6 +597,7 @@ public class UserProfile {
         songs.forEach(pair -> searchedItemsModel.addElement(pair.getValue1()));
         searchedItemsJList.setModel(searchedItemsModel);
         showingListOfSongs = true;
+        wasDisplayMorePressed = false;
     }
 
     private void displayMasterSearch() {
@@ -589,6 +608,7 @@ public class UserProfile {
         searchedItemsJList.setModel(searchedItemsModel);
         showMasterSearchedItems = true;
         showingListOfSongs = false;
+        wasDisplayMorePressed = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -700,12 +720,5 @@ public class UserProfile {
         }
     }
 
-    private static void sort(ArrayList<Tuple2<String, String>> pairArrayList, SEARCH_FILTER filterStrategy) {
-        if (filterStrategy != SEARCH_FILTER.GENRE) {
-            pairArrayList.sort(Comparator.comparing(Tuple2::getValue1));
-        } else {
-            pairArrayList.sort(Comparator.comparing(Tuple2::getValue0));
-        }
-    }
 
 }

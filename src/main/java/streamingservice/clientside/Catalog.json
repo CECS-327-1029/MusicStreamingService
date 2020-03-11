@@ -146,7 +146,9 @@
       "filter": "SEARCH_FILTER",
       "keyword": "String",
       "searchByID": "boolean",
-      "idFilter": "SEARCH_FILTER"
+      "idFilter": "SEARCH_FILTER",
+      "startIdx": "int",
+      "maxSize": "int"
     },
     "return": "ArrayList<Tuple2<String, String>>"
   },

@@ -1,5 +1,6 @@
 package streamingservice.clientside;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -30,6 +31,7 @@ public class Client {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, 4445);
 
             socket.send(packet);    // send the message
+
             packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet); // get the message from server
 

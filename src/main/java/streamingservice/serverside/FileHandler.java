@@ -6,12 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import streamingservice.clientside.panels.SEARCH_FILTER;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class FileHandler {
@@ -262,8 +260,9 @@ public class FileHandler {
         return false;
     }
 
-    public static String getListOf(String filter, String keyword, boolean searchByID, String idFilter) {
+    public static String getListOf(String filter, String keyword, boolean searchByID, String idFilter, int startIdx, int maxSize) {
         try (Reader reader = Files.newBufferedReader(Paths.get(MUSIC_FILE_PATH))) {
+            JsonObject object = new JsonObject();
             List<Song> allSongs = GSON.fromJson(reader, new TypeToken<List<Song>>() {}.getType());
             reader.close();
 
@@ -271,23 +270,32 @@ public class FileHandler {
             SEARCH_FILTER idFilter1 = null;
             if (idFilter != null) { idFilter1 = SEARCH_FILTER.fromValue(idFilter); }
 
-            JsonObject object = new JsonObject();
-            // goes through the list of all songs and gets those songs whose title contains the keyword given
+            Set<Tuple2<String, String>> set = new HashSet<>();
             for (Song song : allSongs) {
-                String id = song.getID(searchByID ? idFilter1 : filter1);
-                String name = song.getName(searchByID ? idFilter1 : filter1);
-                String value = searchByID ? id : (name != null ? name : id);
-                if (value.toLowerCase().contains(keyword.toLowerCase().trim()) && isFreeToAdd(object, id)) {
-                    if (searchByID) {
-                        object.addProperty(song.getID(filter1), song.getName(filter1));
-                    } else {
-                        object.addProperty(id, name);
-                    }
+                Tuple2<String, String> sg = new Tuple2<>(song.getID(searchByID ? idFilter1 : filter1),
+                                                         song.getName(searchByID ? idFilter1 : filter1));
+                String  value = searchByID ? sg.getValue0() : (sg.getValue1() != null ? sg.getValue1() : sg.getValue0());
+                if (value.toLowerCase().contains(keyword.toLowerCase().trim())) {
+                    set.add(searchByID ? new Tuple2<>(song.getID(filter1), song.getName(filter1)) : sg);
                 }
             }
+
+            ArrayList<Tuple2<String, String>> list = new ArrayList<>(set);
+            sort(list, filter1);
+            int stopIdx = list.size() - (startIdx + maxSize) < 0 ? list.size() : startIdx + maxSize;
+            list.subList(startIdx, stopIdx).forEach(e -> object.addProperty(e.getValue0(), e.getValue1()));
+
             return object.toString();
         } catch (IOException ignored) { }
         return "null";
+    }
+
+    private static void sort(ArrayList<Tuple2<String, String>> list, SEARCH_FILTER filter) {
+        if (filter != SEARCH_FILTER.GENRE) {
+            list.sort(Comparator.comparing(Tuple2::getValue1));
+        } else {
+            list.sort(Comparator.comparing(Tuple2::getValue0));
+        }
     }
 
     private static boolean isFreeToAdd(JsonObject jsonObject, String song) {
