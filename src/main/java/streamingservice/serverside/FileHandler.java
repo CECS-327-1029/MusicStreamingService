@@ -17,8 +17,6 @@ public class FileHandler {
     // set the path to files containing all user and song information
     // set the path to files containing all user and song information
     private static final String FS = System.getProperty("file.separator");
-    private static final String MP3_DIRECTORY_PATH = "resources" + FS + "mp3s" + FS;
-    private static final String IMPERIAL_SONG_PATH = MP3_DIRECTORY_PATH + "490183.mp3";
 
     private static final String JSON_FILES_PATH = "src"+FS+"main"+FS+"java"+FS+"streamingservice"+FS+"serverside"+FS;
     private static final String MUSIC_FILE_PATH = JSON_FILES_PATH+"music.json";
@@ -430,17 +428,5 @@ public class FileHandler {
             }
         } catch (IOException ignored) { }
         return info;
-    }
-
-    /**
-     * This method will find the path of the song in the system.
-     * But for testing purposes, only use the imperial sound
-     * @param song a <Code>Song</Code> object
-     * @return the relative path of the song
-     */
-    public static String getSongPath(Tuple2<String, String> song) {
-        //TODO: Uncomment following line and remove return IMPERIAL_SONG_PATH when there is a mp3 associated with each song in music.json.
-        // return MP3_DIRECTORY_PATH + song.getValue0() + ".mp3";
-        return IMPERIAL_SONG_PATH;
     }
 }

@@ -4,36 +4,29 @@ import com.google.gson.*;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ProxyInterface {
 
     private static final String FS = System.getProperty("file.separator");
     private static final String CATALOG_FILE = "src"+FS+"main"+FS+"java"+FS+"streamingservice"+FS+"clientside"+FS+"Catalog.json";
 
-    /***/
-    private String userID;
-    private Client client;
-    /***/
+    private String userID = "UNKOWN";   // assigned "UNKNOWN" until the user signs into their profile
+    private CommunicationModule communicationModule;
+
+    public ProxyInterface(Client client) {
+        communicationModule = new CommunicationModule(client);
+    }
 
     public JsonObject syncExecution(String remoteMethod, Object... args) {
-
-        /***/
-        CommunicationModule cm = new CommunicationModule(client);
-        /***/
-
         JsonObject json = searchInCatalog(remoteMethod);
-        return replaceParams(json, args);
+        json = replaceParams(json, args);
+        return communicationModule.sendMessage(json, userID);
     }
 
-    /***/
-    private void setUserId(String uID){
+    public void setUserId(String uID){
         this.userID = uID;
     }
-
-    private void setClient(Client cli){
-        this.client = cli;
-    }
-    /***/
 
     /**
      * Searches the Catalog.json file for the respective information on the method.
@@ -83,5 +76,24 @@ public class ProxyInterface {
         return json;
     }
 
+    public Object adjustOutput(JsonObject message) {
+        String returnType = message.get("ReturnType").getAsString();
+        if (returnType.equals("ArrayList<Tuple2<String, String>>")) {
+            if (!message.get("ret").getAsString().equals("null")) {
+                JsonObject returnValue = (JsonObject) new JsonParser().parse(message.get("ret").getAsString());
+                ArrayList<Tuple2<String, String>> output = new ArrayList<>();
+                returnValue.entrySet().forEach(entry -> output.add(new Tuple2<>(entry.getKey(),
+                        entry.getValue() != JsonNull.INSTANCE ? entry.getValue().getAsString() : null)));
+                return output;
+            } else { return null; }
+        } else if (returnType.equals("String")) {
+            return message.get("ret").getAsString();
+        } else if (returnType.equals("boolean")) {
+            return message.get("ret").getAsBoolean();
+        } else if (returnType.equals("void")) {
+            return null;
+        }
+        return null;
+    }
 
 }

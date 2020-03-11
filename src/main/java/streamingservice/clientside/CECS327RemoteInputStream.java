@@ -9,12 +9,10 @@ package streamingservice.clientside;
 */
 
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import com.google.gson.JsonObject;
-import streamingservice.clientside.ProxyInterface;
 
 import java.util.concurrent.Semaphore;
 
@@ -50,7 +48,7 @@ public class CECS327RemoteInputStream extends InputStream {
      /**
      * File name to stream
      */
-    protected Long fileName;
+    protected String fileName;
     /**
     * Instance of an implementation of proxyInterface
     */
@@ -64,7 +62,7 @@ public class CECS327RemoteInputStream extends InputStream {
      * frament in nextBuf
      * @param fileName The name of the file
     */
-    public CECS327RemoteInputStream(Long fileName, ProxyInterface proxy) throws IOException {
+    public CECS327RemoteInputStream(String fileName, ProxyInterface proxy) throws IOException {
         sem = new Semaphore(1); 
         try
         {
@@ -94,9 +92,13 @@ public class CECS327RemoteInputStream extends InputStream {
              
                 JsonObject jsonRet = proxy.syncExecution("getSongChunk", fileName, fragment);
                 String s = jsonRet.get("ret").getAsString();
-                nextBuf = Base64.getDecoder().decode(s);
-                sem.release(); 
-                System.out.println("Read buffer");
+                try {
+                    nextBuf = Base64.getDecoder().decode(s);
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                }
+                sem.release();
+                //System.out.println("Read buffer");
             }
         }.start();
        

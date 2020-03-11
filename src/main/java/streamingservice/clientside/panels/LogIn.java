@@ -1,7 +1,6 @@
 package streamingservice.clientside.panels;
 
 import com.google.gson.JsonObject;
-import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
 import streamingservice.clientside.ProxyInterface;
 
@@ -20,20 +19,17 @@ public class LogIn {
     private JLabel usernameNotFoundLabel;   // label that tells the user that their input/username was not found
 
     private ProxyInterface proxy;
-    private CommunicationModule module;
 
-    public LogIn(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile,
-                 ProxyInterface proxy, CommunicationModule module) {
+    public LogIn(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile, ProxyInterface proxy) {
         this.proxy = proxy;
-        this.module = module;
 
         usernameInput.addActionListener(e -> loginButton.doClick());
 
         // checks if the user is in the system when the log in button is clicked
         loginButton.addActionListener(e ->{
             // if the user is in the system show them their profile
-            JsonObject object = proxy.syncExecution("getUserId", usernameInput.getText());
-            String userId = (String) module.sendMessage(object, "UNKNOWN");
+            JsonObject jsonReturn = proxy.syncExecution("getUserId", usernameInput.getText());
+            String userId = (String) proxy.adjustOutput(jsonReturn);
             if(!userId.equals("")) {
                 usernameInput.setText("");
                 usernameNotFoundLabel.setVisible(false);

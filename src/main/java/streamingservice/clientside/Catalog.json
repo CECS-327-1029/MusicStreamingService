@@ -212,80 +212,23 @@
     "return": "String"
   },
   {
-    "remoteMethod": "setQueue",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {
-      "songsInQueue": "ArrayList<Tuple2<String, String>>"
-    },
-    "return": "void"
-  },
-  {
-    "remoteMethod": "play",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {
-      "song": "Tuple2<String, String>"
-    },
-    "return": "void"
-  },
-  {
-    "remoteMethod": "pause",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "void"
-  },
-  {
-    "remoteMethod": "resume",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "void"
-  },
-  {
-    "remoteMethod": "stop",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "void"
-  },
-  {
-    "remoteMethod": "next",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "String"
-  },
-  {
-    "remoteMethod": "previous",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "String"
-  },
-  {
-    "remoteMethod": "repeat",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "void"
-  },
-  {
-    "remoteMethod": "shuffle",
-    "objectName": "MusicPlayerMaster",
-    "semantics": "at_least_once",
-    "param": {},
-    "return": "ArrayList<Tuple2<String, String>>"
-  },
-  {
     "remoteMethod":"getSongChunk",
-    "objectName":"SongServices",
+    "objectName":"SongDispatcher",
     "param":
     {
-      "song": "long",
-      "fragment": "long"
-    }
+      "song": "String",
+      "fragment": "Long"
+    },
+    "return": "String"
+  },
+  {
+    "remoteMethod": "getFileSize",
+    "objectName":"SongDispatcher",
+    "param":
+    {
+      "key": "String"
+    },
+    "return": "Integer"
   }
 
 ]

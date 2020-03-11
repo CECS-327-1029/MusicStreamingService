@@ -1,7 +1,6 @@
 package streamingservice.clientside.panels;
 
 import com.google.gson.JsonObject;
-import streamingservice.clientside.CommunicationModule;
 import streamingservice.clientside.GUIManager;
 import streamingservice.clientside.ProxyInterface;
 
@@ -35,12 +34,9 @@ public class CreateAccount {
     private JButton logInButton;
 
     private ProxyInterface proxy;
-    private CommunicationModule module;
 
-    public CreateAccount(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile,
-                         ProxyInterface proxy, CommunicationModule module) {
+    public CreateAccount(CardLayout screenTransitionCardLayout, JPanel rootPanel, UserProfile userProfile, ProxyInterface proxy) {
         this.proxy = proxy;
-        this.module = module;
 
         // check if the user has entered the necessary and valid information
         submitButton.addActionListener(e -> {
@@ -70,9 +66,8 @@ public class CreateAccount {
      * Creates an account based on the information given in the form.
      */
     private String createAccount() {
-        JsonObject object = proxy.syncExecution("addUserToSystem", firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
-        String id = (String) module.sendMessage(object, "UNKNOWN");
-        return id;//FileHandler.addUserToSystem(firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
+        JsonObject jsonReturn = proxy.syncExecution("addUserToSystem", firstNameTF.getText(), lastNameTF.getText(), emailTF.getText(), userNameTF.getText());
+        return (String) proxy.adjustOutput(jsonReturn);
     }
 
     /**
@@ -157,10 +152,10 @@ public class CreateAccount {
      * @return true if the user can use the fields chosen, false if they can't
      */
     private boolean areAllNecessaryEntriesValid() {
-        JsonObject object = proxy.syncExecution("isUserNameFreeToUse", userNameTF.getText());
-        boolean isUserNameFree = (boolean) module.sendMessage(object, "UNKNOWN");
-        JsonObject object2 = proxy.syncExecution("isEmailFreeToUse", emailTF.getText());
-        boolean isEmailFree = (boolean) module.sendMessage(object2, "UNKNOWN");
+        JsonObject jsonReturn = proxy.syncExecution("isUserNameFreeToUse", userNameTF.getText());
+        boolean isUserNameFree = (boolean) proxy.adjustOutput(jsonReturn);
+        jsonReturn = proxy.syncExecution("isEmailFreeToUse", emailTF.getText());
+        boolean isEmailFree = (boolean) proxy.adjustOutput(jsonReturn);
 
         if (!isUserNameFree) {
             // tell the user name is in use

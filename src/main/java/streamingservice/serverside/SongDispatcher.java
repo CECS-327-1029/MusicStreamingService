@@ -15,14 +15,13 @@ import java.util.Base64;
 import java.io.FileNotFoundException;
 
 
-public class SongDispatcher
-
-{
+public class SongDispatcher {
     static final int FRAGMENT_SIZE = 8192;
-    public SongDispatcher()
-    {
-        
-    }
+    private static final String FS = System.getProperty("file.separator");
+    private static final String MP3_DIRECTORY_PATH = "resources" + FS + "mp3s" + FS;
+    private static final String IMPERIAL_SONG_PATH = MP3_DIRECTORY_PATH + "490183.mp3";
+
+    public SongDispatcher() { }
     
     /* 
     * getSongChunk: Gets a chunk of a given song
@@ -30,29 +29,34 @@ public class SongDispatcher
     * @param fragment: The chunk corresponds to 
     * [fragment * FRAGMENT_SIZE, FRAGMENT_SIZE]
     */
-    public String getSongChunk(Long key, Long fragment) throws FileNotFoundException, IOException
+    public String getSongChunk(String key, Long fragment)
     {
         byte buf[] = new byte[FRAGMENT_SIZE];
 
-        File file = new File("./" + key);
-        FileInputStream inputStream = new FileInputStream(file);
-        inputStream.skip(fragment * FRAGMENT_SIZE);
-        inputStream.read(buf);
-        inputStream.close(); 
-        
-        // Encode in base64 so it can be transmitted 
-         return Base64.getEncoder().encodeToString(buf);
+        File file = new File(IMPERIAL_SONG_PATH);
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            inputStream.skip(fragment * FRAGMENT_SIZE);
+            inputStream.read(buf);
+            inputStream.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        // Encode in base64 so it can be transmitted
+        return Base64.getEncoder().encodeToString(buf);
     }
     
     /* 
     * getFileSize: Gets a size of the file
     * @param key: Song ID. Each song has a unique ID 
      */
-    public Integer getFileSize(Long key) throws FileNotFoundException, IOException
+    public Integer getFileSize(String key) throws FileNotFoundException, IOException
     {
-        File file = new File("./" + key);        
+        File file = new File(IMPERIAL_SONG_PATH);
         Integer total =  (int)file.length();
-        
+
         return total;
     }
 }

@@ -1,9 +1,9 @@
 package streamingservice.clientside.panels;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import streamingservice.clientside.CommunicationModule;
-import streamingservice.clientside.ProxyInterface;
-import streamingservice.clientside.Tuple2;
+import com.google.gson.JsonParser;
+import streamingservice.clientside.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class UserProfile {
     private static final int MAX_AMOUNT_TO_DISPLAY = 25;
 
     private ProxyInterface proxy;
-    private CommunicationModule module;
+    private MusicPlayerMaster musicPlayerMaster;
 
     private String userId = "";
     // keeps track of what is being searched. Initial value is Songs
@@ -123,10 +123,10 @@ public class UserProfile {
     // reference to the frame the user profile is int
     private JFrame mainFrame;
 
-    public UserProfile(JFrame mainFrame, ProxyInterface proxy, CommunicationModule module) {
+    public UserProfile(JFrame mainFrame, ProxyInterface proxy) {
         this.mainFrame = mainFrame;
         this.proxy = proxy;
-        this.module = module;
+        this.musicPlayerMaster = new MusicPlayerMaster(proxy);
 
         songs = new ArrayList<>();
         masterSearch = new ArrayList<>();
@@ -233,14 +233,13 @@ public class UserProfile {
                 setQueueJListMouseListener(e, queuePopupMenu, clearQueuePopupMenu);
             }
         });
-
-
     }
 
     public void setUser(String userId) {
         this.userId = userId;
+        proxy.setUserId(userId);
         JsonObject object = proxy.syncExecution("getUserName", userId);
-        String username = (String) module.sendMessage(object, userId);
+        String username = (String) proxy.adjustOutput(object);
         userNameDisplayLabel.setText(username);
         displayPlaylists();
         displayCurrentlyPlayingSongs(false);
@@ -396,7 +395,7 @@ public class UserProfile {
         if (mouseEvent.getClickCount() == 2) {
             if (index != -1) {
                 JsonObject object = proxy.syncExecution("adjustQueue", userId, index, false);
-                module.sendMessage(object, userId);
+                proxy.adjustOutput(object);
                 displayCurrentlyPlayingSongs(true);
             }
         }
@@ -412,11 +411,11 @@ public class UserProfile {
                 int indexToAdd = getIndexOfPlaylist(chosenPlaylist);
                 if (indexToAdd != -1) {
                     JsonObject object = proxy.syncExecution("isSongInPlaylist", userId, playlists.get(indexToAdd).getValue0(), songChosen.getValue0());
-                    boolean isSongInPlaylist = (boolean) module.sendMessage(object, userId);
+                    boolean isSongInPlaylist = (boolean) proxy.adjustOutput(object);
                     if (!isSongInPlaylist) {
                         object = proxy.syncExecution("updateUserPlaylists", userId, playlists.get(indexToAdd).getValue0(),
                                 songChosen.getValue0(), songChosen.getValue1(), true);
-                        module.sendMessage(object, userId);
+                        proxy.adjustOutput(object);
                     }
                 }
                 displayPlaylists();
@@ -430,15 +429,15 @@ public class UserProfile {
         Tuple2<String, String> song = searchStrategy == SEARCH_FILTER.SONGS ?
                 songs.get(chosenSongIndex) : songs.get(chosenSongIndex - 1);
 
-        JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
-        module.sendMessage(object1, userId);
+        JsonObject object = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
+        proxy.adjustOutput(object);
         displayCurrentlyPlayingSongs(songsInQueue.size() == 0);
     }
 
     private void removeFromPlaylistOptionActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("updateUserPlaylists", userId, playlists.get(playListUserIsIn).getValue0(),
                 songsInPlaylist.get(songToRemoveIndex-1).getValue0(), songsInPlaylist.get(songToRemoveIndex-1).getValue0(), false);
-        module.sendMessage(object, userId);
+        proxy.adjustOutput(object);
         displayPlaylists();
         lookingAtPlaylistList = true;
     }
@@ -448,14 +447,14 @@ public class UserProfile {
         queueModel.clear();
         songsInQueue.clear();
         JsonObject object = proxy.syncExecution("getPlaylistSongs", userId, playlists.get(playlistJList.getSelectedIndex() ).getValue0());
-        ArrayList<Tuple2<String, String>> songs = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+        ArrayList<Tuple2<String, String>> songs = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         if (songs != null) {
             songsInQueue.addAll(songs);
             object = proxy.syncExecution("clearQueue", userId);
-            module.sendMessage(object, userId);
+            proxy.adjustOutput(object);
             songsInQueue.forEach(song -> {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
-                module.sendMessage(object1, userId);
+                proxy.adjustOutput(object1);
             });
             displayCurrentlyPlayingSongs(true);
         }
@@ -464,11 +463,11 @@ public class UserProfile {
     @SuppressWarnings("unchecked")
     private void addPlaylistToQueueActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("getPlaylistSongs", userId, playlists.get(playlistJList.getSelectedIndex() ).getValue0());
-        ArrayList<Tuple2<String, String>> songs = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+        ArrayList<Tuple2<String, String>> songs = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         if (songs != null) {
             songs.forEach(song -> {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
-                module.sendMessage(object1, userId);
+                proxy.adjustOutput(object1);
             });
             displayCurrentlyPlayingSongs(true);
         }
@@ -476,13 +475,13 @@ public class UserProfile {
 
     private void removeFromQueueActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("adjustQueue", userId, queueJList.getSelectedIndex(), true);
-        module.sendMessage(object, userId);
+        proxy.adjustOutput(object);
         displayCurrentlyPlayingSongs(false);
     }
 
     private void clearQueueActionListener(ActionEvent actionEvent) {
         JsonObject object = proxy.syncExecution("clearQueue", userId);
-        module.sendMessage(object, userId);
+        proxy.adjustOutput(object);
         displayCurrentlyPlayingSongs(false);
     }
 
@@ -491,7 +490,7 @@ public class UserProfile {
             int index = songsInQueue.indexOf(lastSelectedSong);
             if (index != -1) {
                 JsonObject object = proxy.syncExecution("adjustQueue", userId, index, false);
-                module.sendMessage(object, userId);
+                proxy.adjustOutput(object);
                 displayCurrentlyPlayingSongs(true);
             }
         } else if (lastSelectedSong != null) {
@@ -500,48 +499,50 @@ public class UserProfile {
     }
 
     private void pauseButtonActionListener() {
-        JsonObject object = proxy.syncExecution("pause");
-        module.sendMessage(object, userId);
+        musicPlayerMaster.pause();
     }
 
     private void resumeButtonActionListener() {
-        JsonObject object = proxy.syncExecution("resume");
-        module.sendMessage(object, userId);
+        musicPlayerMaster.resume();
     }
 
     private void stopButtonActionListener() {
-        JsonObject object = proxy.syncExecution("stop");
-        module.sendMessage(object, userId);
+        musicPlayerMaster.stop();
         mainFrame.setTitle("");
     }
 
     private void nextButtonActionListener() {
-        JsonObject object = proxy.syncExecution("next");
-        String out = (String) module.sendMessage(object, userId);
-        if (!out.equals("")) { mainFrame.setTitle(out); }
+        String songId = musicPlayerMaster.next();
+        if (!songId.equals("")) {
+            JsonObject object = proxy.syncExecution("getSongInfo", songId);
+            mainFrame.setTitle((String) proxy.adjustOutput(object));
+            queueJList.setSelectedIndex(++currentlyPlayingSongIndex);
+        }
     }
 
     private void previousButtonActionListener() {
-        JsonObject object = proxy.syncExecution("previous");
-        String out = (String) module.sendMessage(object, userId);
-        if (!out.equals("")) { mainFrame.setTitle(out); }
+        String songId = musicPlayerMaster.previous();
+        if (!songId.equals("")) {
+            JsonObject object = proxy.syncExecution("getSongInfo", songId);
+            mainFrame.setTitle((String) proxy.adjustOutput(object));
+            queueJList.setSelectedIndex(--currentlyPlayingSongIndex);
+        }
     }
 
     private void repeatButtonActionListener() {
-        JsonObject object = proxy.syncExecution("repeat");
-        module.sendMessage(object, userId);
+        musicPlayerMaster.repeat();
     }
 
     @SuppressWarnings("unchecked")
     private void shuffleButtonActionListener() {
         JsonObject object = proxy.syncExecution("clearQueue", userId);
-        module.sendMessage(object, userId);
-        object = proxy.syncExecution("shuffle");
-        Object returnValue = module.sendMessage(object, userId);
+        proxy.adjustOutput(object);
+
+        ArrayList<Tuple2<String, String>> returnValue = musicPlayerMaster.shuffle();
         if (returnValue != null) {
-            ((ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId)).forEach(song -> {
+            returnValue.forEach(song -> {
                 JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, song.getValue0(), song.getValue1(), true);
-                module.sendMessage(object1, userId);
+                proxy.adjustOutput(object1);
             });
             displayCurrentlyPlayingSongs(false);
         }
@@ -552,7 +553,7 @@ public class UserProfile {
         if (!keyword.trim().equals("")) {
             JsonObject object = proxy.syncExecution("getListOf", searchBy.toString(), keyword, searchByID,
                     idFilter != null ? idFilter.toString() : null, startIdx, MAX_AMOUNT_TO_DISPLAY);
-            ArrayList<Tuple2<String, String>> searchedFor = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+            ArrayList<Tuple2<String, String>> searchedFor = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
 
             if (searchBy == SEARCH_FILTER.SONGS) {
                 if (!wasDisplayMorePressed) {
@@ -614,7 +615,7 @@ public class UserProfile {
     @SuppressWarnings("unchecked")
     private void displayPlaylists() {
         JsonObject object = proxy.syncExecution("getUserPlaylists", userId);
-        playlists = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+        playlists = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         playlistModel.clear();
         if (playlists != null) {
             playlists.forEach(playlist -> playlistModel.addElement(playlist.getValue1()));
@@ -626,7 +627,7 @@ public class UserProfile {
     @SuppressWarnings("unchecked")
     private void displayPlaylistSongs(int index) {
         JsonObject object = proxy.syncExecution("getPlaylistSongs", userId, playlists.get(index).getValue0());
-        songsInPlaylist = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+        songsInPlaylist = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         if (songsInPlaylist != null) {
             playlistModel.clear();
             playlistModel.addElement(GO_BACK_SYMBOL);
@@ -639,19 +640,20 @@ public class UserProfile {
     @SuppressWarnings("unchecked")
     private void displayCurrentlyPlayingSongs(boolean startPlayingFirst) {
         JsonObject object = proxy.syncExecution("getQueuedSongs", userId);
-        songsInQueue = (ArrayList<Tuple2<String, String>>) module.sendMessage(object, userId);
+        songsInQueue = (ArrayList<Tuple2<String, String>>) proxy.adjustOutput(object);
         if (songsInQueue != null) {
             queueModel.clear();
             songsInQueue.forEach(song -> queueModel.addElement(song.getValue1()));
             queueJList.setModel(queueModel);
-            object = proxy.syncExecution("setQueue", listToJsonString(songsInQueue));
-            module.sendMessage(object, userId);
+
+            musicPlayerMaster.setQueue(songsInQueue);
             queueJList.setSelectedIndex(0);
             if (startPlayingFirst) {
-                object = proxy.syncExecution("play", tupleToString(songsInQueue.get(0)));
-                module.sendMessage(object, userId);
+                musicPlayerMaster.play(songsInQueue.get(0));
+                musicPlayerMaster.play(songsInQueue.get(0));
                 object = proxy.syncExecution("getSongInfo", songsInQueue.get(0).getValue0());
-                mainFrame.setTitle((String) module.sendMessage(object, userId));
+                mainFrame.setTitle((String) proxy.adjustOutput(object));
+                currentlyPlayingSongIndex = 0;
             }
         }
     }
@@ -670,9 +672,8 @@ public class UserProfile {
     }
 
     private void playSelectedSong(Tuple2<String, String> songToPlay) {
-        JsonObject object1 = proxy.syncExecution("addSongToQueue", userId, songToPlay.getValue0(), songToPlay.getValue1(), false);
-
-        module.sendMessage(object1, userId);
+        JsonObject object = proxy.syncExecution("addSongToQueue", userId, songToPlay.getValue0(), songToPlay.getValue1(), false);
+        proxy.adjustOutput(object);
         displayCurrentlyPlayingSongs(true);
     }
 
@@ -703,7 +704,7 @@ public class UserProfile {
         if(playlistName != null){
             if (!playlistName.trim().equals("")) {
                 JsonObject object = proxy.syncExecution("createPlaylist", userId, playlistName);
-                module.sendMessage(object, userId);
+                proxy.adjustOutput(object);
                 //updates the model
                 displayPlaylists();
                 lookingAtPlaylistList = true;
@@ -715,7 +716,7 @@ public class UserProfile {
         String chosenPlaylist = JOptionPane.showInputDialog("Enter playlist name");
         if (chosenPlaylist != null) {
             JsonObject object = proxy.syncExecution("deletePlaylist", userId, chosenPlaylist);
-            module.sendMessage(object, userId);
+            proxy.adjustOutput(object);
             displayPlaylists();
             lookingAtPlaylistList = true;
         }
