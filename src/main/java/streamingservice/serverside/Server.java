@@ -7,7 +7,6 @@ import java.net.SocketException;
 
 public class Server extends Thread {
 
-    private Dispatcher dispatcher = new Dispatcher();
     private CommunicationModule module = new CommunicationModule();
 
     private DatagramSocket socket;  // used to send packets

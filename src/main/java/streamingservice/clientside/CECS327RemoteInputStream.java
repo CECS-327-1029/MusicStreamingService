@@ -92,9 +92,9 @@ public class CECS327RemoteInputStream extends InputStream {
              
                 JsonObject jsonRet = proxy.syncExecution("getSongChunk", fileName, fragment);
                 String s = jsonRet.get("ret").getAsString();
-                try {
-                    nextBuf = Base64.getDecoder().decode(s);
+                try { nextBuf = Base64.getDecoder().decode(s.replaceAll(" ", "+"));
                 } catch (IllegalArgumentException e) {
+                    System.out.println("----");
                     System.out.println(e.getMessage());
                 }
                 sem.release();

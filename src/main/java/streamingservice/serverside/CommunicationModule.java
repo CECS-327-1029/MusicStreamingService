@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +18,17 @@ public class CommunicationModule {
     //this is the history
     private String messageType;
     private HashMap<Integer, JsonObject> history = new HashMap<>();
+
+    private Dispatcher dispatcher = new Dispatcher();
+
+    public CommunicationModule() {
+        FileHandler fileHandler = new FileHandler();
+        dispatcher.registerObject(fileHandler, "FileHandler");
+
+        SongDispatcher songDispatcher = new SongDispatcher();
+        dispatcher.registerObject(songDispatcher, "SongDispatcher");
+
+    }
 
     public String receiveMessage(String message) {
         this.clientCM = (JsonObject) new JsonParser().parse(message.substring(0, message.lastIndexOf("}")+1));
@@ -54,8 +67,7 @@ public class CommunicationModule {
         if(!history.containsKey(clientReq)){
             //change message type to reply
 
-            Dispatcher dispatcher = new Dispatcher();
-            dispatcher.registerObject(clientCM.get("remoteMethod").getAsString(), clientCM.get("objectName").getAsString());
+            //dispatcher.registerObject(clientCM.get("remoteMethod").getAsString(), clientCM.get("objectName").getAsString());
             returnValue = (JsonObject) new JsonParser().parse(dispatcher.dispatch(clientCM.toString()));
 
             //puts the value to the key "clientReq"

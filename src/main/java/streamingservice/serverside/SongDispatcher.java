@@ -29,8 +29,7 @@ public class SongDispatcher {
     * @param fragment: The chunk corresponds to 
     * [fragment * FRAGMENT_SIZE, FRAGMENT_SIZE]
     */
-    public String getSongChunk(String key, Long fragment)
-    {
+    public String getSongChunk(String key, Long fragment) {
         byte buf[] = new byte[FRAGMENT_SIZE];
 
         File file = new File(IMPERIAL_SONG_PATH);
@@ -42,7 +41,6 @@ public class SongDispatcher {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
 
         // Encode in base64 so it can be transmitted
         return Base64.getEncoder().encodeToString(buf);

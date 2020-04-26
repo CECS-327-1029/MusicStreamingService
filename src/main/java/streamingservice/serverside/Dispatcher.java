@@ -9,15 +9,9 @@ package streamingservice.serverside; /**
 import java.util.HashMap;
 import java.util.*;
 import java.lang.reflect.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Base64;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import streamingservice.clientside.panels.SEARCH_FILTER;
 
 
 public class Dispatcher implements DispatcherInterface {
@@ -48,8 +42,9 @@ public class Dispatcher implements DispatcherInterface {
         JsonParser parser = new JsonParser();
         JsonObject jsonRequest = parser.parse(request).getAsJsonObject();
         try {
+            System.out.println("Arrived at dispatch");
             // Obtains the object pointing to SongServices
-            Object object = Class.forName("streamingservice.serverside."+jsonRequest.get("objectName").getAsString()).newInstance();
+            Object object = ListOfObjects.get(jsonRequest.get("objectName").getAsString());
             Method[] methods = object.getClass().getMethods();
             Method method = null;
             // Obtains the method
@@ -63,6 +58,7 @@ public class Dispatcher implements DispatcherInterface {
                 jsonReturn.addProperty("error", "Method does not exist");
                 return jsonReturn.toString();
             }
+
             // Prepare the  parameters 
             Class[] types =  method.getParameterTypes();
 
@@ -133,7 +129,7 @@ public class Dispatcher implements DispatcherInterface {
 
             jsonReturn.addProperty("ret", ret);
    
-        } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException | InstantiationException e)
+        } catch (InvocationTargetException | IllegalAccessException e)
         {
             jsonReturn.addProperty("error", "Error on " + jsonRequest.get("objectName").getAsString() + "." + jsonRequest.get("remoteMethod").getAsString());
         }
@@ -144,7 +140,7 @@ public class Dispatcher implements DispatcherInterface {
     * registerObject: It register the objects that handle the request
     * @param remoteMethod: It is the name of the method that 
     *  objectName implements. 
-    * @objectName: It is the main class that contaions the remote methods
+    * @objectName: It is the main class that contains the remote methods
     * each object can contain several remote methods
     */
     public void registerObject(Object remoteMethod, String objectName)

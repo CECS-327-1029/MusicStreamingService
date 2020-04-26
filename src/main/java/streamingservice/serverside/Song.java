@@ -1,8 +1,5 @@
 package streamingservice.serverside;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import streamingservice.clientside.panels.SEARCH_FILTER;
 import streamingservice.serverside.songinfo.Artist;
 import streamingservice.serverside.songinfo.Release;
 

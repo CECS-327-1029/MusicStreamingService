@@ -3,18 +3,16 @@ package streamingservice.serverside;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import streamingservice.clientside.panels.SEARCH_FILTER;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class FileHandler {
 
-    // set the path to files containing all user and song information
     // set the path to files containing all user and song information
     private static final String FS = System.getProperty("file.separator");
 
@@ -388,30 +386,24 @@ public class FileHandler {
      * @param  searchBy the method by which we want to compare the search input
      * @return -1 if the search input was not found, else it's index position in the file
      */
-    private static int isContainedInUsersFile(String searchInput, String searchBy){
-        int userIndex = -1;
-
+    private static int isContainedInUsersFile(String searchInput, String searchBy) {
         try(FileReader reader = new FileReader(USER_FILE_PATH)){
-            //Read Json file
-            JsonArray userList = (JsonArray) new JsonParser().parse(reader);
-            if (userList != null) {
-                /*checks to see if the json file is empty. If the json file is not empty then the method
-                 * will iterate through all the json file to find the userName that the user input */
-                if (!userList.toString().equals(EMPTY_FILE_INDICATOR)) {    // check only if there are people in the system
-                    //iterate through the file
-                    // !ifFound is used to exit the loop once a match is found
-                    for (int i = 0; i < userList.size() && userIndex == -1; i++) {
-                        //is saving the userName of userObject
-                        String userInfo = ((JsonObject) userList.get(i)).get(searchBy).toString();
-                        //removing the "" from the string
-                        userInfo = userInfo.replace("\"", "");
-                        //checks to see if the names are the same
-                        userIndex = searchInput.equals(userInfo) ? i : -1;
-                    }
-                }
-            }
-        } catch(IOException | ClassCastException ignored){ }
-        return userIndex;
+            List<User> allUsers = GSON.fromJson(reader, new TypeToken<List<User>>() {}.getType());
+            AtomicInteger i = new AtomicInteger();
+            int index = allUsers.stream()
+                    .peek(v -> i.incrementAndGet())
+                    .anyMatch(user -> {
+                        String str = searchBy.equals(USER_NAME_FIELD) ? user.getUserName() :
+                                (
+                                        searchBy.equals(EMAIL_FIELD) ? user.getEmail() : user.getId().toString()
+                                );
+                        return searchInput.equals(str);
+                    }) ? i.get() - 1 : -1;
+            return index;
+        } catch (IOException | ClassCastException e) {
+            System.out.println(e.getMessage());
+        }
+        return -1;
     }
 
     public static String getSongInfo(String songId) {
