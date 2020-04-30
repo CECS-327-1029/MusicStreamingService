@@ -18,6 +18,5 @@ public interface ChordMessageInterface extends Remote
     void put(long guidObject, RemoteInputFileStream inputStream) throws IOException, RemoteException;
     void put(long guidObject, String text) throws IOException, RemoteException;
     RemoteInputFileStream get(long guidObject) throws IOException, RemoteException;
-    byte[] get(long guidObject, int offset, int len) throws IOException, RemoteException;
     void delete(long guidObject) throws IOException, RemoteException;
 }
