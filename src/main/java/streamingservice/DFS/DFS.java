@@ -69,9 +69,7 @@ public class DFS
         }
         return 0;
     }
-    
-    
-    
+
     public DFS(int port) throws Exception {
         
         this.port = port;
@@ -80,11 +78,11 @@ public class DFS
         Files.createDirectories(Paths.get(guid + "/repository"));
         Files.createDirectories(Paths.get(guid + "/tmp"));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            //chord.leave();
+            chord.leave();
         }));
     }
     
-    public  void join(String Ip, int port) throws Exception {
+    public void join(String Ip, int port) throws Exception {
         chord.joinRing(Ip, port);
         chord.print();
     }
@@ -134,7 +132,6 @@ public class DFS
         }
     }
 
-    
     public String ls() throws Exception {
         FilesJson metadata = readMetadata();
         StringBuilder list = new StringBuilder();
@@ -144,7 +141,6 @@ public class DFS
         return list.toString();
     }
 
-    
     public void touch(String fileName) throws Exception {
         FilesJson metadata = readMetadata();
         FileJson newFile = new FileJson();

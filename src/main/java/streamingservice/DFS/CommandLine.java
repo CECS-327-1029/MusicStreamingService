@@ -1,12 +1,7 @@
 package streamingservice.DFS;
 
-import java.rmi.*;
-import java.net.*;
 import java.util.*;
 import java.io.*;
-import java.math.BigInteger;
-import java.security.*;
-import java.nio.file.*;
 
 
 public class CommandLine {
@@ -46,7 +41,7 @@ public class CommandLine {
                 int i = 0;
                 for (byte b : bdata) bytes[i++] = b;
                 dfs.append(result[1], bytes);
-            } else if (result[0].equalsIgnoreCase("move") && result.length > 2) {
+            } else if (result[0].equalsIgnoreCase("mv") && result.length > 2) {
                 dfs.mv(result[1], result[2]);
             } else if (result[0].equalsIgnoreCase("print")) {
                 dfs.print();
