@@ -47,13 +47,11 @@ import java.security.*;
  */
 
 
-public class DFS
-{
+public class DFS {
     private int port;
     private Chord chord;
     
-    private long md5(String objectName)
-    {
+    private long md5(String objectName) {
         try
         {
             MessageDigest m = MessageDigest.getInstance("MD5");
@@ -105,8 +103,7 @@ public class DFS
         return filesJson;
     }
     
-    public void writeMetaData(FilesJson filesJson) throws Exception
-    {
+    public void writeMetaData(FilesJson filesJson) throws Exception {
         long guid = md5("Metadata");
         ChordMessageInterface peer = chord.locateSuccessor(guid);
         peer.put(guid, new Gson().toJson(filesJson));
@@ -115,13 +112,13 @@ public class DFS
     public void mv(String oldName, String newName) throws Exception {
         boolean doesFileExist = false;
         FilesJson metadata = this.readMetadata();
-
         for (int i = 0; i < metadata.getSize() && !doesFileExist; i++) {
             FileJson file = metadata.getFile(i);
             if (file.getFileName().equalsIgnoreCase(oldName)) {
                 file.setFileName(newName);
                 file.setWriteTimeStamp(LocalDateTime.now().toString());
                 doesFileExist = true;
+                writeMetaData(metadata);
             }
         }
 
@@ -164,49 +161,43 @@ public class DFS
         }
     }
     
-    public Byte[] read(String fileName, int pageNumber) throws Exception {
+    public RemoteInputFileStream read(String fileName, int pageNumber) throws Exception {
         FilesJson metadata = readMetadata();
-
         FileJson file = metadata.getFile(fileName);
+        RemoteInputFileStream rifs = null;
         if (file != null) {
             PagesJson page = file.getPages().get(--pageNumber);
             String readTime = LocalDateTime.now().toString();
             page.setReadTimeStamp(readTime);
             file.setReadTimeStamp(readTime);
             Long pageGuid = page.getGuid();
-            byte[] byteData = chord.locateSuccessor(pageGuid).get(pageGuid).buf;
-            Byte[] readData = new Byte[byteData.length];
-            int i = 0;
-            for (byte b :  byteData) { readData[i++] = b; }
-            return readData;
+            rifs = chord.locateSuccessor(pageGuid).get(pageGuid);
+            writeMetaData(metadata);
         }
-        return null;
+        return rifs;
     }
 
-    public Byte[] tail(String fileName) throws Exception {
+    public RemoteInputFileStream tail(String fileName) throws Exception {
         FileJson file = readMetadata().getFile(fileName);
         return file != null ? read(fileName, file.getNumberOfPages() - 1) : null;
     }
 
-    public Byte[] head(String fileName) throws Exception {
+    public RemoteInputFileStream head(String fileName) throws Exception {
         FileJson file = readMetadata().getFile(fileName);
         return file != null ? read(fileName, 0) : null;
     }
 
-    public void append(String filename, Byte[] data) throws Exception {
+    public void append(String filename, RemoteInputFileStream data) throws Exception {
         FilesJson metadata = readMetadata();
         FileJson file = metadata.getFile(filename);
         if (file != null) {
-            long sizeOfData = data.length;
+            long sizeOfData = data.available();
             String appendTime = LocalDateTime.now().toString();
             file.setWriteTimeStamp(appendTime);
             file.setNumberOfPages(file.getNumberOfPages() + 1);
             file.setSize(file.getSize() + sizeOfData);
             Long guid = md5(filename + LocalDateTime.now().toString());
-            byte[] bdata = new byte[data.length];
-            int i = 0;
-            for (Byte b : data) bdata[i++] = b.byteValue();
-            chord.locateSuccessor(guid).put(guid, Base64.getEncoder().encodeToString(bdata));
+            chord.locateSuccessor(guid).put(guid, data);
             file.addPage(guid, sizeOfData, appendTime, "0", 0);
             writeMetaData(metadata);
         }
@@ -387,7 +378,7 @@ public class DFS
                     .findFirst().orElse(null);
         }
 
-        public void addFile(FileJson file) { metadata.add(file); }
+        public void addFile(FileJson file) { metadata.add(file);}
 
         public boolean containsFile(String fileName) {
             return metadata.stream().anyMatch(file -> file.getFileName().equals(fileName));

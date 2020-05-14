@@ -42,7 +42,6 @@ public class Dispatcher implements DispatcherInterface {
         JsonParser parser = new JsonParser();
         JsonObject jsonRequest = parser.parse(request).getAsJsonObject();
         try {
-            System.out.println("Arrived at dispatch");
             // Obtains the object pointing to SongServices
             Object object = ListOfObjects.get(jsonRequest.get("objectName").getAsString());
             Method[] methods = object.getClass().getMethods();

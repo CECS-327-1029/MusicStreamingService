@@ -30,17 +30,21 @@ public class CommandLine {
             } else if (result[0].equalsIgnoreCase("delete") && result.length > 1) {
                 dfs.delete(result[1]);
             } else if (result[0].equalsIgnoreCase("read") && result.length > 2) {
-                dfs.read(result[1], Integer.parseInt(result[2]));
+                RemoteInputFileStream rifs = dfs.read(result[1], Integer.parseInt(result[2]));
+                rifs.connect();
+                int nextByte = rifs.read();
+                while (nextByte != -1) {
+                    System.out.print((char) nextByte);
+                    nextByte = rifs.read();
+                }
+                System.out.println();
+                System.out.println("Done");
             } else if (result[0].equalsIgnoreCase("tail") && result.length > 1) {
                 dfs.tail(result[1]);
             } else if (result[0].equalsIgnoreCase("head") && result.length > 1) {
                 dfs.head(result[1]);
             } else if (result[0].equalsIgnoreCase("append") && result.length > 2) {
-                byte[] bdata = Base64.getDecoder().decode(result[2]);
-                Byte[] bytes = new Byte[bdata.length];
-                int i = 0;
-                for (byte b : bdata) bytes[i++] = b;
-                dfs.append(result[1], bytes);
+                dfs.append(result[1], new RemoteInputFileStream(result[2]));
             } else if (result[0].equalsIgnoreCase("mv") && result.length > 2) {
                 dfs.mv(result[1], result[2]);
             } else if (result[0].equalsIgnoreCase("print")) {
